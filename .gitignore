@@ -104,3 +104,12 @@ dist
 .tern-port
 
 .vscode/
+
+# macOS
+.DS_Store
+
+# large file
+assets/
+*.pth.tar
+*.pkl
+*.pt
