@@ -1,0 +1,8 @@
+fastapi==0.75.0
+uvicorn==0.17.6
+python-multipart==0.0.5
+torch==1.8.1
+torchvision==0.9.1
+opencv-python==4.4.0.42
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4

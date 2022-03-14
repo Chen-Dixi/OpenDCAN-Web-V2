@@ -113,3 +113,5 @@ assets/
 *.pth.tar
 *.pkl
 *.pt
+
+__pycache__/
