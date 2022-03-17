@@ -1,30 +1,33 @@
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
-from passlib.context import CryptContext
+from jose import jwt
+from sqlalchemy.orm import Session
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from domain.model import *
 from router import user
-from dependencies import get_user, pwd_context, oauth2_scheme, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM
-from repository.db import fake_users_db
+from dependencies import oauth2_scheme, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, get_db
 
+from repository import dto, crud
+
+# create database table, skip this if there already has one
+# entity.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.include_router(user.router)
 
 # utility to verify if a received password matches the hash stored.
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    return crud.pwd_context.verify(plain_password, hashed_password)
 
 # hash a password coming from the user.
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    return crud.pwd_context.hash(password)
 
 # authenticate and return a user
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
+def authenticate_user(username: str, password: str, db: Session):
+    user = crud.get_user_by_username(db, username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -41,19 +44,13 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-
-def fake_decode_token(token):
-    return User(
-        username=token + "fakedecoded", email="john@example.com", full_name="John Doe"
-    )
-
 @app.get("/items/")
 async def read_items(token: str = Depends(oauth2_scheme)):
     return {"token": token}
 
-@app.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+@app.post("/token", response_model=dto.Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

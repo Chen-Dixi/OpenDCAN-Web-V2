@@ -6,3 +6,4 @@ torchvision==0.9.1
 opencv-python==4.4.0.42
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+SQLAlchemy==1.4.32
