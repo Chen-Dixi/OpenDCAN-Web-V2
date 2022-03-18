@@ -19,7 +19,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item>
-              <el-button type="text">没有账号? 点击注册</el-button>
+              <el-link href="/register" type="primary">没有账号? 点击注册</el-link>
             </el-form-item>
           </el-col>
         </el-row>
