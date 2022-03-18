@@ -1,4 +1,5 @@
 <template>
+  <img alt="Vue logo" src="../assets/appicon.png"/>
   <el-row>
     <el-col :span="5"></el-col>
     <el-col :span="14">

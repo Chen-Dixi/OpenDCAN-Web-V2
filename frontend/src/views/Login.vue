@@ -1,4 +1,6 @@
 <template>
+  <img alt="Vue logo" src="../assets/appicon.png"/>
+  <h1>登录OpenDCAN标注平台</h1>
   <el-row>
     <el-col :span="5"></el-col>
     <el-col :span="5"></el-col>
