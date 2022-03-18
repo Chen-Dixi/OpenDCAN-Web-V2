@@ -9,6 +9,8 @@ const count = ref(0)
 </script>
 
 <template>
+<div>
+  <img alt="Vue logo" src="../assets/appicon.png"/>
   <h1>{{ msg }}</h1>
 
   <p>
@@ -31,6 +33,7 @@ const count = ref(0)
     Edit
     <code>components/HelloWorld.vue</code> to test hot module replacement.
   </p>
+</div>
 </template>
 
 <style scoped>

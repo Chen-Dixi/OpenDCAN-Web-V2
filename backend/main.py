@@ -3,12 +3,13 @@ from jose import jwt
 from sqlalchemy.orm import Session
 
 from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 
 from domain.model import *
 from router import user
 from dependencies import oauth2_scheme, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, get_db
-
+from settings import allow_cors_origins
 from repository import dto, crud
 
 # create database table, skip this if there already has one
@@ -16,6 +17,13 @@ from repository import dto, crud
 
 app = FastAPI()
 app.include_router(user.router)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allow_cors_origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*']
+)
 
 # utility to verify if a received password matches the hash stored.
 def verify_password(plain_password, hashed_password):
