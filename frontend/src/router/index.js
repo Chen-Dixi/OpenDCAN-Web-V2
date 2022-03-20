@@ -5,6 +5,9 @@ const HelloWorld = () => import('../components/HelloWorld.vue')
 const Login = () => import('../views/Login.vue')
 const Register = () => import('../views/Register.vue')
 const TaskList = () => import('../views/TaskList.vue')
+const Datasets = () => import('../views/Datasets.vue')
+const Play = () => import('../views/Play.vue')
+
 const routes = [
     {
         path: '/',
@@ -19,8 +22,14 @@ const routes = [
                 name: 'HelloWorld',
                 component: HelloWorld
             },{
-                path: 'task',
+                path: 'tasks',
                 component: TaskList
+            },{
+                path: 'datasets',
+                component: Datasets
+            },{
+                path: 'play',
+                component: Play
             }
         ]
     },

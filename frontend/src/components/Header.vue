@@ -5,25 +5,58 @@
         </a>
         
     </div>
+    <nav class="header-nav">
+        <el-link class="nav-link" href="/datasets">Dataset</el-link>
+        <el-link class="nav-link nav-link--selected" href="/tasks">Task</el-link>
+        <el-link class="nav-link" href="/play">Play</el-link>
+    </nav>
     <div class="header-right">
-            <el-link class="header-item" href="/">关于</el-link>
+            <el-link class="header-item-right" href="/">关于</el-link>
             <a class="header-button" href="/login">登录</a>
     </div>
 </template>
+<script lang="ts" setup>
+import {ref} from 'vue'
+
+const activeChildPage = ref('first')
+// TBD: class and style bind
+const handleClick = (tab: string, event: Event) => {
+    console.log(tab, event)
+}
+
+</script>
 
 <style>
 .header-left {
-    position: relative;
-    left: 0;
+    position: absolute;
+    left: 20px;
     display: flex;
+}
+.header-nav {
+    position: relative;
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+}
+.header-nav .nav-link{
+    margin: 0 24px;
+    font-family: LabGrotesque,Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    
+}
+.nav-link--selected {
+    text-decoration: none;
+    transform: translateY(-1px) scaleX(1);
+    color: #333;
 }
 .header-right {
     position: absolute;
-    right: 0;
     display: flex;
-    margin: 0 20px;
+    right: 20px;
 }
-.header-item{
+.header-item-right{
     margin-right: 35px;
 }
 .header-button {
@@ -36,4 +69,5 @@
     font-family: 'BoingSemiBold', Helvetica, Arial, sans-serif;
     text-decoration: none;
 }
+
 </style>

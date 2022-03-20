@@ -4,21 +4,19 @@
 import Header from '../components/Header.vue'
 </script>
 <template>
-    <el-container>
+    <el-container class="home-container">
       <el-header>
         <Header/>
       </el-header>
-      <el-main>
-        <router-view/>
-      </el-main>
+      <router-view/>
     </el-container>
 </template>
 
 <style>
-.el-container{
+.home-container{
   display: block; 
 }
-.el-container .el-header{
+.home-container .el-header{
   position: relative;
   background-color:ghostwhite;
   display: flex;
