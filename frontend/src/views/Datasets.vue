@@ -29,17 +29,20 @@ export default {
 </script>
 
 <template>
-    <div class="datasets-main-wrapper">
+    <el-main class="datasets-main-wrapper">
     <el-container class="datasets-container-page">
       <el-aside class="datasets-sidebar" width="300px">
+        <el-affix :offset="20">
           <content-filter class="box-card" :contents="tasks"/>
+        </el-affix>
+          
       </el-aside>
       <el-main class="datasets-main-list">
         <dataset-cell v-for="dataset in datasets" :dataset="dataset" :key="dataset.id">
         </dataset-cell>
       </el-main>
     </el-container>
-  </div>
+  </el-main>
 </template>
 
 
@@ -48,7 +51,6 @@ export default {
     display: flex;
     justify-content: center;
     flex: 1 0 auto;
-    margin-top: 150px;
 }
 .datasets-container-page{
     flex: none;

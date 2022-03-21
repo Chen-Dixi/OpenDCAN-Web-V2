@@ -1,3 +1,5 @@
 <template>
-    Play
+    <el-main>
+        Play
+    </el-main>
 </template>
