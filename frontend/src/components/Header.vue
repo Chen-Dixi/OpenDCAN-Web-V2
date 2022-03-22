@@ -6,9 +6,10 @@
         
     </div>
     <nav class="header-nav">
-        <el-link class="nav-link" href="/datasets">Dataset</el-link>
-        <el-link class="nav-link nav-link--selected" href="/tasks">Task</el-link>
-        <el-link class="nav-link" href="/play">Play</el-link>
+        <el-link class="nav-link" :class="overviewSelectedClassObject" href="/">Overview</el-link>
+        <el-link class="nav-link" :class="datasetsSelectedClassObject" href="/datasets">Dataset</el-link>
+        <el-link class="nav-link" :class="tasksSelectedClassObject" href="/tasks">Task</el-link>
+        <el-link class="nav-link" :class="playSelectedClassObject" href="/play">Play</el-link>
     </nav>
     <div class="header-right">
             <el-link class="header-item-right" href="/">关于</el-link>
@@ -16,7 +17,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {ref} from 'vue'
+import {computed, ref} from 'vue'
 
 const activeChildPage = ref('first')
 // TBD: class and style bind
@@ -24,7 +25,38 @@ const handleClick = (tab: string, event: Event) => {
     console.log(tab, event)
 }
 
+const props = defineProps({
+    selectedTab: String
+})
+
 </script>
+<script lang="ts">
+export default {
+    computed: {
+        overviewSelectedClassObject(){
+            return {
+                'nav-link--selected': this.selectedTab == "overview"
+            }
+        },
+        datasetsSelectedClassObject(){
+            return {
+                'nav-link--selected': this.selectedTab == "datasets"
+            }
+        },
+        tasksSelectedClassObject() {
+            return {
+                'nav-link--selected': this.selectedTab == "tasks"
+            }
+        },
+        playSelectedClassObject() {
+            return {
+                'nav-link--selected': this.selectedTab == "play"
+            }
+        }
+    }
+}
+</script>
+
 
 <style>
 .header-left {
@@ -48,7 +80,7 @@ const handleClick = (tab: string, event: Event) => {
 }
 .nav-link--selected {
     text-decoration: none;
-    transform: translateY(-1px) scaleX(1);
+    transform: translateY(-1px) scale(1.2);
     color: #333;
 }
 .header-right {

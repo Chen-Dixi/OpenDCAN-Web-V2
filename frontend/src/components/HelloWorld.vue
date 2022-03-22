@@ -7,9 +7,15 @@ defineProps({
 
 const count = ref(0)
 </script>
-
+<script>
+export default {
+  mounted() {
+    this.$emit('didSelectTab', 'overview')
+  },
+}
+</script>
 <template>
-<div>
+<el-main>
   <img alt="Vue logo" src="../assets/appicon.png"/>
   <h1>{{ msg }}</h1>
 
@@ -33,7 +39,7 @@ const count = ref(0)
     Edit
     <code>components/HelloWorld.vue</code> to test hot module replacement.
   </p>
-</div>
+</el-main>
 </template>
 
 <style scoped>

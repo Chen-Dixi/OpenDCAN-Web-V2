@@ -12,5 +12,5 @@ app
     .component('dataset-cell', DatasetListCell)
     .use(ElementPlus)
     .use(router)
-    .mount('#app')
+    .mount('#app') //mount 不返回应用本身。相反，它返回的是根组件实例。
     

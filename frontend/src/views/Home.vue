@@ -6,11 +6,26 @@ import Header from '../components/Header.vue'
 <template>
     <el-container class="home-container">
       <el-header>
-        <Header/>
+        <Header :selectedTab="selectedTab" />
       </el-header>
-      <router-view/>
+      <router-view @didSelectTab="selectTab" msg="hello"/>
     </el-container>
 </template>
+<script>
+export default {
+  data() {
+    return {
+      selectedTab: ""
+    }
+  },
+  methods:{
+    selectTab(tabName){
+      this.selectedTab = tabName
+    }
+  }
+}
+</script>
+
 
 <style>
 .home-container{

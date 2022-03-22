@@ -52,6 +52,15 @@ const tableData = [
   },
 ]
 </script>
+<script lang="ts" >
+export default {
+  mounted(){
+    // emit
+    this.$emit('didSelectTab', 'tasks')
+  },
+}
+</script>
+
 <style scoped>
 .tasks-main-wrapper{
     justify-content: center;
