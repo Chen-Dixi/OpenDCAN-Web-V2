@@ -11,17 +11,10 @@ export default {
         { name: 'Domain Adaptation', badge:'78' }
       ],
       datasets: [
-        {id:1, title:'ImageNet', description:'The ImageNet dataset contains 14,197,122 annotated images according to the WordNet hierarchy. Since 2010 the dataset is used in the ImageNet Large Scale Visual Recognition Challenge (ILSVRC), a benchmark in image classification and object detection. The publicly released dataset contains a set of manually annotated training images. A set of test images is also released, with the manual annotations withheld. ILSVRC annotations fall into one of two categories: (1) image-level annotation of a binary label for the presence or absence of an object class in the image, e.g., “there are cars in this image” but “there are no tigers,” and (2) object-level annotation of a tight bounding box and class label around an object instance in the image, e.g., “there is a screwdriver centered at position (20,25) with width of 50 pixels and height of 30 pixels”. The ImageNet project does not own the copyright of the images, therefore only thumbnails and URLs of images are provided.'},
-        {id:2, title:'CIFAR-10', description:'The CIFAR-10 dataset (Canadian Institute for Advanced Research, 10 classes) is a subset of the Tiny Images dataset and consists of 60000 32x32 color images. The images are labelled with one of 10 mutually exclusive classes: airplane, automobile (but not truck or pickup truck), bird, cat, deer, dog, frog, horse, ship, and truck (but not pickup truck). There are 6000 images per class with 5000 training and 1000 testing images per class.'},
-        {id:3, title:'CIFAR-10', description:'The CIFAR-10 dataset (Canadian Institute for Advanced Research, 10 classes) is a subset of the Tiny Images dataset and consists of 60000 32x32 color images. The images are labelled with one of 10 mutually exclusive classes: airplane, automobile (but not truck or pickup truck), bird, cat, deer, dog, frog, horse, ship, and truck (but not pickup truck). There are 6000 images per class with 5000 training and 1000 testing images per class.'},
-        {id:4, title:'CIFAR-10', description:'The CIFAR-10 dataset (Canadian Institute for Advanced Research, 10 classes) is a subset of the Tiny Images dataset and consists of 60000 32x32 color images. The images are labelled with one of 10 mutually exclusive classes: airplane, automobile (but not truck or pickup truck), bird, cat, deer, dog, frog, horse, ship, and truck (but not pickup truck). There are 6000 images per class with 5000 training and 1000 testing images per class.'},
-        {id:5, title:'CIFAR-10', description:'The CIFAR-10 dataset (Canadian Institute for Advanced Research, 10 classes) is a subset of the Tiny Images dataset and consists of 60000 32x32 color images. The images are labelled with one of 10 mutually exclusive classes: airplane, automobile (but not truck or pickup truck), bird, cat, deer, dog, frog, horse, ship, and truck (but not pickup truck). There are 6000 images per class with 5000 training and 1000 testing images per class.'},
-        {id:6, title:'CIFAR-10', description:'The CIFAR-10 dataset (Canadian Institute for Advanced Research, 10 classes) is a subset of the Tiny Images dataset and consists of 60000 32x32 color images. The images are labelled with one of 10 mutually exclusive classes: airplane, automobile (but not truck or pickup truck), bird, cat, deer, dog, frog, horse, ship, and truck (but not pickup truck). There are 6000 images per class with 5000 training and 1000 testing images per class.'},
-        {id:7, title:'CIFAR-10', description:'The CIFAR-10 dataset (Canadian Institute for Advanced Research, 10 classes) is a subset of the Tiny Images dataset and consists of 60000 32x32 color images. The images are labelled with one of 10 mutually exclusive classes: airplane, automobile (but not truck or pickup truck), bird, cat, deer, dog, frog, horse, ship, and truck (but not pickup truck). There are 6000 images per class with 5000 training and 1000 testing images per class.'},
-        {id:8, title:'CIFAR-10', description:'The CIFAR-10 dataset (Canadian Institute for Advanced Research, 10 classes) is a subset of the Tiny Images dataset and consists of 60000 32x32 color images. The images are labelled with one of 10 mutually exclusive classes: airplane, automobile (but not truck or pickup truck), bird, cat, deer, dog, frog, horse, ship, and truck (but not pickup truck). There are 6000 images per class with 5000 training and 1000 testing images per class.'},
-        {id:9, title:'CIFAR-10', description:'The CIFAR-10 dataset (Canadian Institute for Advanced Research, 10 classes) is a subset of the Tiny Images dataset and consists of 60000 32x32 color images. The images are labelled with one of 10 mutually exclusive classes: airplane, automobile (but not truck or pickup truck), bird, cat, deer, dog, frog, horse, ship, and truck (but not pickup truck). There are 6000 images per class with 5000 training and 1000 testing images per class.'},
-        {id:10, title:'CIFAR-10', description:'The CIFAR-10 dataset (Canadian Institute for Advanced Research, 10 classes) is a subset of the Tiny Images dataset and consists of 60000 32x32 color images. The images are labelled with one of 10 mutually exclusive classes: airplane, automobile (but not truck or pickup truck), bird, cat, deer, dog, frog, horse, ship, and truck (but not pickup truck). There are 6000 images per class with 5000 training and 1000 testing images per class.'},
-        {id:11, title:'CIFAR-10', description:'The CIFAR-10 dataset (Canadian Institute for Advanced Research, 10 classes) is a subset of the Tiny Images dataset and consists of 60000 32x32 color images. The images are labelled with one of 10 mutually exclusive classes: airplane, automobile (but not truck or pickup truck), bird, cat, deer, dog, frog, horse, ship, and truck (but not pickup truck). There are 6000 images per class with 5000 training and 1000 testing images per class.'}
+        {id:1, title:'Office31', description:'The Office dataset contains 31 object categories in three domains: Amazon, DSLR and Webcam. The 31 categories in the dataset consist of objects commonly encountered in office settings, such as keyboards, file cabinets, and laptops. The Amazon domain contains on average 90 images per class and 2817 images in total. As these images were captured from a website of online merchants, they are captured against clean background and at a unified scale. The DSLR domain contains 498 low-noise high resolution images (4288×2848). There are 5 objects per category. Each object was captured from different viewpoints on average 3 times. For Webcam, the 795 images of low resolution (640×480) exhibit significant noise and color as well as white balance artifacts.'},
+        {id:2, title:'Digits', description:'The DIGITS dataset consists of 1797 8×8 grayscale images (1439 for training and 360 for testing) of handwritten digits.'},
+        {id:3, title:'Office-Home', description:'Office-Home is a benchmark dataset for domain adaptation which contains 4 domains where each domain consists of 65 categories. The four domains are: Art – artistic images in the form of sketches, paintings, ornamentation, etc.; Clipart – collection of clipart images; Product – images of objects without a background and Real-World – images of objects captured with a regular camera. It contains 15,500 images, with an average of around 70 images per class and a maximum of 99 images in a class.'},
+        {id:4, title:'VisDA-2017', description:'VisDA-2017 is a simulation-to-real dataset for domain adaptation with over 280,000 images across 12 categories in the training, validation and testing domains. The training images are generated from the same object under different circumstances, while the validation images are collected from MSCOCO..'}
       ]
     }
   },
@@ -35,18 +28,28 @@ export default {
 
 <template>
     <el-main class="datasets-main-wrapper">
-    <el-container class="datasets-container-page">
-      <el-aside class="datasets-sidebar" width="280px">
-        <el-affix :offset="20">
-          <content-filter class="box-card" :contents="tasks"/>
-        </el-affix>
+      <el-container class="datasets-container-page">
+        <el-aside class="datasets-sidebar" width="280px">
+          <el-affix :offset="20">
+            <content-filter class="box-card" :contents="tasks"/>
+          </el-affix>
+            
+        </el-aside>
+        <el-main class="datasets-main-list">
+          <div style="padding-bottom: 40px">
+            <el-dropdown class="float-right" trigger="click">
+              <el-button>导入</el-button>
+              <template #dropdown>
+                <upload-dataset-dropdown-menu/>
+              </template>
+            </el-dropdown>
+            
+          </div>
           
-      </el-aside>
-      <el-main class="datasets-main-list">
-        <dataset-cell v-for="dataset in datasets" :dataset="dataset" :key="dataset.id">
-        </dataset-cell>
-      </el-main>
-    </el-container>
+          <dataset-cell v-for="dataset in datasets" :dataset="dataset" :key="dataset.id">
+          </dataset-cell>
+        </el-main>
+      </el-container>
   </el-main>
 </template>
 
@@ -55,7 +58,6 @@ export default {
 .datasets-main-wrapper{
     display: flex;
     justify-content: center;
-    flex: 1 0 auto;
 }
 .datasets-container-page{
     flex: none;

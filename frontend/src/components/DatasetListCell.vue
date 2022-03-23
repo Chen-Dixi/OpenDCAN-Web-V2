@@ -8,12 +8,12 @@ const props = defineProps({
     <div class="dataset-wide-cell">
         <a href="/datasets">
             <div class="dataset-row">
-                <div class="col-sm-2">
+                <div class="col-sm-2 row-item-image">
                     <!-- item image TBD: background-image css -->
-                    <div class="row-item-image">
+                    <!-- <div class="row-item-image">
                         <img alt="Vue logo" src="../assets/header-logo.png"/>
-                    </div>
-                    
+                    </div> -->
+                        <div class="background-image" style="background-image: url('https://production-media.paperswithcode.com/thumbnails/dataset/dataset-0000000862-18b92295_QcdVuiG.jpg')"></div>
                 </div>
                 <div class="col-sm-10 row-item-title-detail">
                     <!-- title and detail -->
@@ -41,18 +41,10 @@ const props = defineProps({
     justify-content: center;
     display: flex;
 }
-.col-sm-2 {
-    flex: 0 0 16.6666666667%; /* grow 0, shrink 0*/
-    max-width: 16.6666666667%;
-    
-}
-.col-sm-10 {
-    flex: 0 0 83.3333333333%;
-    max-width: 83.3333333333%;
-}
 .dataset-row .row-item-image {
-    padding: 0 15px;
-    margin: 0;
+    height: 60px;
+    width: 100%;
+    padding: 0 5px;
     /* TBD image ratio */
 }
 .dataset-row .row-item-title-detail {

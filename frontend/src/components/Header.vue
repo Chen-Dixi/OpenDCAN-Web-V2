@@ -58,7 +58,7 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 .header-left {
     position: absolute;
     left: 20px;
