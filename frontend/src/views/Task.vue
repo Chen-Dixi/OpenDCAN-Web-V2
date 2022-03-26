@@ -16,7 +16,7 @@ import {Edit} from '@element-plus/icons-vue'
                 <el-icon><edit /></el-icon>
             </div>
             <el-menu
-            default-active="1" @select="didSelect"
+            default-active="dataset" @select="didSelect"
             >
                 <el-menu-item index="dataset">
                 <el-icon><grid /></el-icon>
@@ -32,7 +32,14 @@ import {Edit} from '@element-plus/icons-vue'
                 </el-menu-item>
             </el-menu>
         </el-aside>
-        
+        <el-main class="main-container">
+            <router-view v-slot="{ Component }">
+                <keep-alive>
+                    <component :is="Component"/>
+                </keep-alive>
+            </router-view>
+        </el-main>
+
     </el-container>
 </template>
 <script lang="ts">
@@ -46,7 +53,7 @@ export default {
         const onRoutes = computed(() => {
             return route.path;
         });
-
+        
         const store = useStore();
 
         return {
@@ -55,11 +62,12 @@ export default {
     },
     methods:{
         didSelect(index){
-            console.log(index)
+            // console.log(index)
+            this.$router.push(index)
         }
     },
     beforeRouteUpdate (to, from){
-        console.log(to.params.id)
+        
     },
 }
 </script>
@@ -74,5 +82,8 @@ export default {
     text-align: left;
     align-items: center;
     justify-content: space-between;
+}
+.main-container {
+
 }
 </style>

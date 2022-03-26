@@ -1,7 +1,5 @@
 <template>
-    <el-main>
-        Play
-    </el-main>
+    PlaySection
 </template>
 
 <script>
