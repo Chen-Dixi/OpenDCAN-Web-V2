@@ -8,7 +8,7 @@ import Header from '../components/Header.vue'
       <el-header>
         <Header :selectedTab="selectedTab" />
       </el-header>
-      <router-view @didSelectTab="selectTab" msg="hello"/>
+      <router-view @didSelectTab="selectTab"/>
     </el-container>
 </template>
 <script>

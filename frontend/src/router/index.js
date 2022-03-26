@@ -1,12 +1,13 @@
 import {createRouter, createWebHistory} from "vue-router";
 
 const Home = () => import('../views/Home.vue')
-const HelloWorld = () => import('../components/HelloWorld.vue')
+const Overview = () => import('../components/Overview.vue')
 const Login = () => import('../views/Login.vue')
 const Register = () => import('../views/Register.vue')
 const TaskList = () => import('../views/TaskList.vue')
 const Datasets = () => import('../views/Datasets.vue')
 const Play = () => import('../views/Play.vue')
+const TaskView = () => import('../views/Task.vue')
 
 const routes = [
     {
@@ -19,8 +20,8 @@ const routes = [
         children:[
             {
                 path: '/index',
-                name: 'HelloWorld',
-                component: HelloWorld
+                name: 'Overview',
+                component: Overview
             },{
                 path: 'tasks',
                 component: TaskList
@@ -32,6 +33,9 @@ const routes = [
                 component: Play
             }
         ]
+    },{
+        path: '/task/:id',
+        component: TaskView
     },
     {
         path: '/login',

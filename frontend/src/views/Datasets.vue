@@ -1,5 +1,9 @@
 <script>
+import DatasetListCell from '../components/DatasetListCell.vue'
 export default {
+  components: {
+    DatasetCell: DatasetListCell
+  },
   data() {
     return {
       tasks: [
@@ -46,8 +50,8 @@ export default {
             
           </div>
           
-          <dataset-cell v-for="dataset in datasets" :dataset="dataset" :key="dataset.id">
-          </dataset-cell>
+          <dataset-cell v-for="dataset in datasets" :dataset="dataset" :key="dataset.id"/>
+
         </el-main>
       </el-container>
   </el-main>
