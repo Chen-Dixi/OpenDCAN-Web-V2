@@ -84,6 +84,6 @@ export default {
     justify-content: space-between;
 }
 .main-container {
-
+    padding: 20px;
 }
 </style>

@@ -9,7 +9,6 @@
         <el-link class="nav-link" :class="overviewSelectedClassObject" href="/">Overview</el-link>
         <el-link class="nav-link" :class="datasetsSelectedClassObject" href="/datasets">Dataset</el-link>
         <el-link class="nav-link" :class="tasksSelectedClassObject" href="/tasks">Task</el-link>
-        <el-link class="nav-link" :class="playSelectedClassObject" href="/play">Play</el-link>
     </nav>
     <div class="header-right">
             <el-link class="header-item-right" href="/">关于</el-link>
@@ -46,11 +45,6 @@ export default {
         tasksSelectedClassObject() {
             return {
                 'nav-link--selected': this.selectedTab == "tasks"
-            }
-        },
-        playSelectedClassObject() {
-            return {
-                'nav-link--selected': this.selectedTab == "play"
             }
         }
     }
@@ -101,5 +95,4 @@ export default {
     font-family: 'BoingSemiBold', Helvetica, Arial, sans-serif;
     text-decoration: none;
 }
-
 </style>
