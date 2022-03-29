@@ -7,18 +7,23 @@ export default {
   data() {
     return {
       tasks: [
-        { name: 'Semantic Segmentation', badge:'12' },
-        { name: 'Image Classification', badge:'175' },
-        { name: 'Object Detection', badge:'56' },
-        { name: 'Question Answering', badge:'749' },
-        { name: 'Action Recognition', badge:'56' },
-        { name: 'Domain Adaptation', badge:'78' }
+        
+        { name: 'Image Classification', badge:'3' },
+        { name: 'Action Recognition', badge:'1' },
       ],
       datasets: [
-        {id:1, title:'Office31', description:'The Office dataset contains 31 object categories in three domains: Amazon, DSLR and Webcam. The 31 categories in the dataset consist of objects commonly encountered in office settings, such as keyboards, file cabinets, and laptops. The Amazon domain contains on average 90 images per class and 2817 images in total. As these images were captured from a website of online merchants, they are captured against clean background and at a unified scale. The DSLR domain contains 498 low-noise high resolution images (4288×2848). There are 5 objects per category. Each object was captured from different viewpoints on average 3 times. For Webcam, the 795 images of low resolution (640×480) exhibit significant noise and color as well as white balance artifacts.'},
-        {id:2, title:'Digits', description:'The DIGITS dataset consists of 1797 8×8 grayscale images (1439 for training and 360 for testing) of handwritten digits.'},
-        {id:3, title:'Office-Home', description:'Office-Home is a benchmark dataset for domain adaptation which contains 4 domains where each domain consists of 65 categories. The four domains are: Art – artistic images in the form of sketches, paintings, ornamentation, etc.; Clipart – collection of clipart images; Product – images of objects without a background and Real-World – images of objects captured with a regular camera. It contains 15,500 images, with an average of around 70 images per class and a maximum of 99 images in a class.'},
-        {id:4, title:'VisDA-2017', description:'VisDA-2017 is a simulation-to-real dataset for domain adaptation with over 280,000 images across 12 categories in the training, validation and testing domains. The training images are generated from the same object under different circumstances, while the validation images are collected from MSCOCO..'}
+        {id:1, title:'手写数字体', description:'自己的手写数字体，用来训练能识别自己手写数字的模型', imageUrl:'https://production-media.paperswithcode.com/thumbnails/dataset/dataset-0000000001-f66c5dc9_UOPLOsj.jpg'},
+        {
+          id:2, 
+          title:'实验室物品', 
+          description:'从实验室收集的办公室物品，包括Office31的所有类别',
+          imageUrl:'https://production-media.paperswithcode.com/thumbnails/dataset/dataset-0000000862-18b92295_QcdVuiG.jpg'},
+        {
+          id:3, 
+          title:'手势', 
+          description:'自己收集的手势图片，希望通过已有的数据集进行辅助标注',
+          imageUrl:'https://production-media.paperswithcode.com/thumbnails/dataset/dataset-0000003668-ac1bf57d_vhxwilG.jpg'
+        }
       ]
     }
   },
@@ -35,7 +40,7 @@ export default {
       <el-container class="datasets-container-page">
         <el-aside class="datasets-sidebar" width="280px">
           <el-affix :offset="20">
-            <content-filter class="box-card" :contents="tasks"/>
+            <content-filter class="box-card" title="根据任务类型过滤" :contents="tasks"/>
           </el-affix>
             
         </el-aside>

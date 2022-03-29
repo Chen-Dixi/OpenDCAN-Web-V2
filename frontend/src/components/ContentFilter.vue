@@ -1,13 +1,14 @@
 <script setup>
 const props = defineProps({
-    contents: Array
+    contents: Array,
+    title: String
 })
 
 </script>
 <template>
     <el-card shadow="nerver">
         <div class="card-header">
-            <span>Filter by Task</span>
+            <span>{{title}}</span>
         </div>
         <div>
             <el-scrollbar height="200px">

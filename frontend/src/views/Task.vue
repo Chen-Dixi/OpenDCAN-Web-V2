@@ -12,11 +12,11 @@ import {Edit} from '@element-plus/icons-vue'
     <el-container>
         <el-aside  width="280px">
             <div class="menu-header">
-                <span>无标签姿态数据标注项目  </span>
+                <span>办公生活用品标注项目  </span>
                 <el-icon><edit /></el-icon>
             </div>
             <el-menu
-            default-active="dataset" @select="didSelect"
+            :default-active="onRouted" @select="didSelect"
             >
                 <el-menu-item index="dataset">
                 <el-icon><grid /></el-icon>
@@ -46,24 +46,25 @@ import {Edit} from '@element-plus/icons-vue'
 import { computed, watch } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import utils from '../common/utils';
 export default {
     setup() {
         const route = useRoute();
 
-        const onRoutes = computed(() => {
-            return route.path;
-        });
+        // in setup() function, we can create reactivity APIs and expose them,
+        // and the computed() function will return a read-only ref object
         
         const store = useStore();
-
-        return {
-            onRoutes,
-        };
     },
     methods:{
         didSelect(index){
-            // console.log(index)
-            this.$router.push(index)
+            this.$router.replace(index)
+        }
+    },
+    computed:{
+        onRouted() {
+            // 帮助 菜单栏确定当前选中栏目
+            return utils.lastPathElem(this.$route.path)
         }
     },
     beforeRouteUpdate (to, from){

@@ -6,13 +6,13 @@
         
     </div>
     <nav class="header-nav">
-        <el-link class="nav-link" :class="overviewSelectedClassObject" href="/">Overview</el-link>
-        <el-link class="nav-link" :class="datasetsSelectedClassObject" href="/datasets">Dataset</el-link>
-        <el-link class="nav-link" :class="tasksSelectedClassObject" href="/tasks">Task</el-link>
+        <el-link class="nav-link" :class="overviewSelectedClassObject" href="/">首页</el-link>
+        <el-link class="nav-link" :class="datasetsSelectedClassObject" href="/datasets">数据集</el-link>
+        <el-link class="nav-link" :class="tasksSelectedClassObject" href="/tasks">任务</el-link>
     </nav>
     <div class="header-right">
             <el-link class="header-item-right" href="/">关于</el-link>
-            <a class="header-button" href="/login">登录</a>
+            <!-- <a class="header-button" href="/login">登录</a> -->
     </div>
 </template>
 <script lang="ts" setup>

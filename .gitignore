@@ -115,3 +115,5 @@ assets/
 *.pt
 
 __pycache__/
+
+files/

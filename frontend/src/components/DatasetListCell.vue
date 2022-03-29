@@ -13,7 +13,7 @@ const props = defineProps({
                     <!-- <div class="row-item-image">
                         <img alt="Vue logo" src="../assets/header-logo.png"/>
                     </div> -->
-                        <div class="background-image" style="background-image: url('https://production-media.paperswithcode.com/thumbnails/dataset/dataset-0000000862-18b92295_QcdVuiG.jpg')"></div>
+                        <div class="background-image" :style="'background-image: url('+dataset.imageUrl+')'"></div>
                 </div>
                 <div class="col-sm-10 row-item-title-detail">
                     <!-- title and detail -->
