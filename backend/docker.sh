@@ -1,0 +1,1 @@
+docker run --name dcan-api --rm -p 8000:8000 dcan-backend

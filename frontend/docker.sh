@@ -1,0 +1,1 @@
+docker run --name vue-end --rm -p 8080:80 dcan-vue
