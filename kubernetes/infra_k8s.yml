@@ -1,0 +1,46 @@
+# kafka redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-redis
+spec:
+  selector:
+    matchLabels:
+      infra: redis
+  template:
+    metadata:
+      labels:
+        infra: redis
+    spec:
+      containers:
+        - 
+          name: redis-server
+          image: redis:6.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 6379
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-rabbitmq
+spec:
+  selector:
+    matchLabels:
+      infra: rabbitmq
+  template:
+    metadata:
+      labels:
+        infra: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq-server
+          image: rabbitmq:3.9.14-alpine
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5672
+    
+
+    

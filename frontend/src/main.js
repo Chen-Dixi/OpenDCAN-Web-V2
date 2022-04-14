@@ -3,6 +3,7 @@ import App from './App.vue'
 import ElementPlus from 'element-plus'
 import ContentFilter from './components/ContentFilter.vue'
 import UploadDropdownMenu from './components/UploadDropdownMenu.vue'
+import VueCookies from 'vue3-cookies'
 import 'element-plus/dist/index.css'
 import './assets/css/main.css'
 import router from './router/index'
@@ -12,5 +13,6 @@ app
     .component('content-filter', ContentFilter)
     .component('upload-dataset-dropdown-menu', UploadDropdownMenu)
     .use(ElementPlus)
+    .use(VueCookies)
     .use(router)
     .mount('#app') //mount 不返回应用本身。相反，它返回的是根组件实例vm(viewmodel)。

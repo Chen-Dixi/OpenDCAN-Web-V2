@@ -12,7 +12,7 @@
     </nav>
     <div class="header-right">
             <el-link class="header-item-right" href="/">关于</el-link>
-            <!-- <a class="header-button" href="/login">登录</a> -->
+            <a class="header-button" href="/login">登录</a>
     </div>
 </template>
 <script lang="ts" setup>

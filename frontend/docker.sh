@@ -1,1 +1,1 @@
-docker run --name vue-end --rm -p 8080:80 dcan-vue
+docker run --name vue-end --rm -p 80:80 chendixi/dcan-vue
