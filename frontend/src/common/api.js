@@ -1,11 +1,12 @@
 import axios from 'axios'
 import config from './config'
-
+import {useCookies} from 'vue3-cookies'
+const {cookies} = useCookies()
 const request = (url, options = {}, method = 'get', _this, autoCatch = true) => {
   let headers = {};
   if (!url.endsWith('login') && !url.endsWith('register') && !url.endsWith('forgetPassword')) {
     headers = {
-      'Authorization': 'Bearer '+window.$cookies.get('access_token')
+      'Authorization': 'Bearer '+cookies.get('access_token')
     }
   }
 

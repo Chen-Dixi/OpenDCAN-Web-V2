@@ -10,6 +10,7 @@ const TaskView = () => import('../views/Task.vue')
 const TaskDatasetSection = () => import('../section/TaskDatasetSection.vue')
 const TaskPlaySection = () => import('../section/TaskPlaySection.vue')
 const TaskTrainSection = () => import('../section/TaskTrainSection.vue')
+const NotFound = () => import('../views/404.vue')
 
 const routes = [
     {
@@ -59,8 +60,18 @@ const routes = [
         component: Login
     },
     {
+      path: '/404',
+      name: 'NotFound',
+      component: NotFound
+    },
+    {
         path: '/register',
         component: Register
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        hidden: true,
+        redirect: {path: '/404'}
     }
 ]
 

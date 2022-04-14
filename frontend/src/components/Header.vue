@@ -1,3 +1,21 @@
+<script lang="ts" setup>
+import {computed, ref} from 'vue'
+import { storeToRefs } from 'pinia'
+import {useUserStore} from '../pinia/store'
+import {ArrowDown} from '@element-plus/icons-vue'
+const activeChildPage = ref('first')
+// TBD: class and style bind
+const handleClick = (tab: string, event: Event) => {
+    console.log(tab, event)
+}
+
+const props = defineProps({
+    selectedTab: String
+})
+
+const userStore = useUserStore()
+
+</script>
 <template>
     <div class="header-left">
         <a href="/">
@@ -12,23 +30,20 @@
     </nav>
     <div class="header-right">
             <el-link class="header-item-right" href="/">关于</el-link>
-            <a class="header-button" href="/login">登录</a>
+            <a v-if="!this.$cookies.isKey('access_token')" class="header-button" href="/login">登录</a>
+            <el-dropdown v-if="this.$cookies.isKey('access_token')" trigger="click" @command="logout">
+                <span class="el-dropdown-link">
+                {{userStore.username}}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                </span>
+                <template #dropdown>
+                <el-dropdown-menu>
+                    <el-dropdown-item command="logout">退出</el-dropdown-item>
+                </el-dropdown-menu>
+                </template>
+            </el-dropdown>
     </div>
 </template>
-<script lang="ts" setup>
-import {computed, ref} from 'vue'
 
-const activeChildPage = ref('first')
-// TBD: class and style bind
-const handleClick = (tab: string, event: Event) => {
-    console.log(tab, event)
-}
-
-const props = defineProps({
-    selectedTab: String
-})
-
-</script>
 <script lang="ts">
 export default {
     computed: {
@@ -46,6 +61,13 @@ export default {
             return {
                 'nav-link--selected': this.selectedTab == "tasks"
             }
+        }
+    },
+    methods: {
+        logout(command) {
+            this.$cookies.remove('access_token')
+            this.$cookies.remove('username')
+            this.$router.push('/login')
         }
     }
 }
