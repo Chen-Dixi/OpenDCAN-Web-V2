@@ -20,7 +20,7 @@ class CreateUserDTO(UserBaseDTO):
 
 class Token(BaseModel):
     access_token: str
-    username: int
+    username: str
     token_type: str
 
 class TokenData(BaseModel):
