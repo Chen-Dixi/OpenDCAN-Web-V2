@@ -18,7 +18,9 @@
             <el-upload
               ref="datasetUploadRef"
               :limit="1"
+              :headers="uploadHeader"
               :action="datasetUploadUrl"
+              :on-success="handleUploadSuccess"
               :show-file-list="false"
             >
               <div ref="inner-upload"></div>
@@ -36,8 +38,11 @@
 import DatasetListCell from '../components/DatasetListCell.vue'
 
 import globalConfig from '../common/config'
-import type {UploadInstance} from 'element-plus'
+import type {UploadInstance, UploadFile, UploadFiles} from 'element-plus'
 import {ref} from 'vue'
+import {useCookies} from 'vue3-cookies'
+const {cookies} = useCookies()
+
 export default {
   setup(){
     const datasetUploadRef = ref<UploadInstance>()
@@ -69,7 +74,8 @@ export default {
           imageUrl:'https://production-media.paperswithcode.com/thumbnails/dataset/dataset-0000003668-ac1bf57d_vhxwilG.jpg'
         }
       ],
-      datasetUploadUrl: globalConfig.backend_service_url+'/dataset/target/upload'
+      datasetUploadUrl: globalConfig.backend_service_url+'/dataset/target/upload',
+      uploadHeader: {Authorization: 'Bearer '+cookies.get('access_token'),}
     }
   },
   mounted(){
@@ -80,9 +86,16 @@ export default {
     import_dataset(datatype){
       if (datatype=='dataset'){
         // this.$refs['datasetUploadRef'].$refs['invoker'].handleClick()
+        // hack el-upload，触发文件选择器的 元素在 el-upload 外面。
         this.$refs['inner-upload'].click()
       }
-    }
+    },
+    handleUploadSuccess(response: any, uploadFile: UploadFile, uploadFiles: UploadFiles) {
+        console.log(response.data)
+        this.$notify.success({
+          title: '成功',
+          message: '上传成功',});
+    },
   }
 }
 </script>
