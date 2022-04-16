@@ -12,7 +12,7 @@ from repository import crud, entity, dto
 
 SECRET_KEY = "e5ac7747a0ab5636e9705164c49f4e4ea9c5ee33321d3401b62253e8dd1a628e"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 180
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

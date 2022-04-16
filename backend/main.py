@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 
 from domain.model import *
-from router import user
+from router import user, dataset
 from dependencies import oauth2_scheme, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, get_db
 from settings import allow_cors_origins
 from repository import dto, crud
@@ -17,6 +17,7 @@ from repository import dto, crud
 
 app = FastAPI()
 app.include_router(user.router)
+app.include_router(dataset.router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_cors_origins,
@@ -52,8 +53,8 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-@app.get("/items/")
-async def read_items(token: str = Depends(oauth2_scheme)):
+@app.get("/token")
+async def read_token(token: str = Depends(oauth2_scheme)):
     return {"token": token}
 
 @app.post("/login", response_model=dto.Token)
@@ -65,8 +66,9 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    userDto = dto.UserDTO.from_orm(user)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "username": user.username , "token_type": "bearer"}
+    return {"access_token": access_token, "username": userDto.username, "token_type": "bearer"}

@@ -44,7 +44,6 @@ import {Edit} from '@element-plus/icons-vue'
 </template>
 <script lang="ts">
 import { computed, watch } from "vue";
-import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import utils from '../common/utils';
 export default {
@@ -53,8 +52,6 @@ export default {
 
         // in setup() function, we can create reactivity APIs and expose them,
         // and the computed() function will return a read-only ref object
-        
-        const store = useStore();
     },
     methods:{
         didSelect(index){

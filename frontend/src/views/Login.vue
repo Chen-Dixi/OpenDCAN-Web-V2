@@ -6,7 +6,7 @@
     <el-col :span="5"></el-col>
     <el-col :span="5">
       <el-form ref="loginForm" :model="loginForm" :rules="rules" label-width="80px" label-position="top">
-        <el-form-item label="用户名 或 电话" prop="username">
+        <el-form-item label="用户名" prop="username">
           <el-input v-model="loginForm.username"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">

@@ -1,17 +1,32 @@
-from typing import Optional
+from typing import Optional, Any
 from pydantic import BaseModel
-
+from pydantic.utils import GetterDict
 class UserBaseDTO(BaseModel):
     email: str
     username: str
     display_name: str
 
+class PydanticUserGetter(GetterDict):
+    custom_keys = ['is_active']
+
+    def get(self, key: str, default: Any) -> Any:
+        if key == 'is_active':
+            val = getattr(self._obj, key)
+            return True if val == 1 else False
+        elif key == 'is_admin':
+            val = getattr(self._obj, 'user_type')
+            return True if val == 1 else False
+        else:
+            return getattr(self._obj, key, default)
+
+        
 class UserDTO(UserBaseDTO):
     id: int
     is_active: bool
-    
+    is_admin: bool
     class Config:
         orm_mode = True
+        getter_dict = PydanticUserGetter
 
 class CreateUserDTO(UserBaseDTO):
     password: str
@@ -25,3 +40,28 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+
+
+# ========================== Dataset Record
+
+class PydanticTargetDatasetGetter(GetterDict):
+    custom_keys = ['is_active']
+
+    def get(self, key: str, default: Any) -> Any:
+        if key == 'is_active':
+            val = getattr(self._obj, key)
+            return True if val == 1 else False
+        else:
+            return getattr(self._obj, key, default)
+class TargetDatsetDto(BaseModel):
+    id : int
+    title : str
+    description : str
+    file_path : str
+    create_name : str
+    update_name : str
+    is_active : bool
+
+    class Config:
+        orm_mode = True
+        getter_dict = PydanticTargetDatasetGetter

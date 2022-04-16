@@ -1,9 +1,9 @@
 <template>
     <div class="padding-15">
-        <div class="cell-wrapper">
+        <!-- <div class="cell-wrapper">
             <div class="cell-row">
                 <div class="col-sm-2 cell-image">
-                    <!-- TBD: 替换对应图标 -->
+
                     <div class="background-image" style="background-image: url('/src/assets/header-logo.png')"></div>
                 </div>
                 <div class="col-sm-10">
@@ -26,11 +26,11 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="cell-wrapper">
             <div class="cell-row">
                 <div class="col-sm-2 cell-image">
-                    <div class="background-image" style="background-image: url('/src/assets/upload-dataset.png')"></div>
+                    <img src="/src/assets/upload-dataset.png" height="100%">
                 </div>
                 <div class="col-sm-10">
                     <a class="cell-title">Datasets</a>
@@ -58,6 +58,7 @@
 }
 .cell-image{
     height: 40px;
+    width: 40px;
     width: 100%;
     padding: 0 15px;
     margin: 0;

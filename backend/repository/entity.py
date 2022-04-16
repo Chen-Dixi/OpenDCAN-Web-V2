@@ -15,3 +15,16 @@ class User(Base):
     is_active = Column(Integer, default=1)
     create_time = Column(BIGINT)
     update_time = Column(BIGINT)
+
+class TargetDatasetRecord(Base):
+    __tablename__ = "target_dataset_record"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(VARCHAR)
+    description = Column(VARCHAR)
+    file_path = Column(VARCHAR)
+    create_name = Column(VARCHAR)
+    update_name = Column(VARCHAR)
+    is_active = Column(Integer, default=1)
+    create_time = Column(BIGINT)
+    update_time = Column(BIGINT)

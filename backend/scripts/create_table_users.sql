@@ -6,7 +6,7 @@ CREATE TABLE `users` (
   `username` varchar(100) DEFAULT NULL,
   `display_name` varchar(100) DEFAULT NULL,
   `hashed_password` varchar(100) DEFAULT NULL,
-  `type` int DEFAULT '0' COMMENT '1: 普通用户, 2:管理员',
+  `user_type` int DEFAULT '0' COMMENT '1: 管理员, 2:普通用户',
   `is_active` int NOT NULL DEFAULT '0' COMMENT '1 active; 2 disabled',
   `create_time` bigint DEFAULT NULL,
   `update_time` bigint DEFAULT NULL,
