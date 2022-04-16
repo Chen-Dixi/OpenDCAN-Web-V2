@@ -11,5 +11,6 @@ CREATE TABLE `users` (
   `create_time` bigint DEFAULT NULL,
   `update_time` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `users_email_IDX` (`email`) USING BTREE
+  UNIQUE KEY `users_email_IDX` (`email`) USING BTREE,
+  UNIQUE KEY `users_username_IDX` (`username`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

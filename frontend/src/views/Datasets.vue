@@ -1,6 +1,50 @@
-<script>
+<template>
+    <el-main class="datasets-main-wrapper">
+      <el-container class="datasets-container-page">
+        <el-aside class="datasets-sidebar" width="280px">
+          <el-affix :offset="20">
+            <content-filter class="box-card" title="根据任务类型过滤" :contents="tasks"/>
+          </el-affix>
+            
+        </el-aside>
+        <el-main class="datasets-main-list">
+          <div style="padding-bottom: 40px">
+            <el-dropdown class="float-right" trigger="click" >
+              <el-button>导入</el-button>
+              <template #dropdown>
+                <upload-dataset-dropdown-menu @command="import_dataset"/>
+              </template>
+            </el-dropdown>
+            <el-upload
+              ref="datasetUploadRef"
+              :limit="1"
+              :action="datasetUploadUrl"
+              :show-file-list="false"
+            >
+              <div ref="inner-upload"></div>
+            </el-upload>
+          </div>
+          
+          <dataset-cell v-for="dataset in datasets" :dataset="dataset" :key="dataset.id"/>
+
+        </el-main>
+      </el-container>
+  </el-main>
+</template>
+<script lang='ts'>
+// @ts-ignore
 import DatasetListCell from '../components/DatasetListCell.vue'
+
+import globalConfig from '../common/config'
+import type {UploadInstance} from 'element-plus'
+import {ref} from 'vue'
 export default {
+  setup(){
+    const datasetUploadRef = ref<UploadInstance>()
+    return {
+      datasetUploadRef
+    }
+  },
   components: {
     DatasetCell: DatasetListCell
   },
@@ -24,44 +68,24 @@ export default {
           description:'自己收集的手势图片，希望通过已有的数据集进行辅助标注',
           imageUrl:'https://production-media.paperswithcode.com/thumbnails/dataset/dataset-0000003668-ac1bf57d_vhxwilG.jpg'
         }
-      ]
+      ],
+      datasetUploadUrl: globalConfig.backend_service_url+'/dataset/target/upload'
     }
   },
   mounted(){
     // emit
     this.$emit('didSelectTab', 'datasets')
   },
-  // emits:['didSelectTab'],
+  methods: {
+    import_dataset(datatype){
+      if (datatype=='dataset'){
+        // this.$refs['datasetUploadRef'].$refs['invoker'].handleClick()
+        this.$refs['inner-upload'].click()
+      }
+    }
+  }
 }
 </script>
-
-<template>
-    <el-main class="datasets-main-wrapper">
-      <el-container class="datasets-container-page">
-        <el-aside class="datasets-sidebar" width="280px">
-          <el-affix :offset="20">
-            <content-filter class="box-card" title="根据任务类型过滤" :contents="tasks"/>
-          </el-affix>
-            
-        </el-aside>
-        <el-main class="datasets-main-list">
-          <div style="padding-bottom: 40px">
-            <el-dropdown class="float-right" trigger="click">
-              <el-button>导入</el-button>
-              <template #dropdown>
-                <upload-dataset-dropdown-menu/>
-              </template>
-            </el-dropdown>
-            
-          </div>
-          
-          <dataset-cell v-for="dataset in datasets" :dataset="dataset" :key="dataset.id"/>
-
-        </el-main>
-      </el-container>
-  </el-main>
-</template>
-
 
 <style scoped>
 .datasets-main-wrapper{

@@ -117,3 +117,6 @@ assets/
 __pycache__/
 
 files/
+
+*.zip
+script/

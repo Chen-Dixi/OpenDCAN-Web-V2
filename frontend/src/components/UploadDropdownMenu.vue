@@ -27,13 +27,13 @@
                 </div>
             </div>
         </div> -->
-        <div class="cell-wrapper">
+        <div class="cell-wrapper" @click="this.$emit('command', 'dataset')">
             <div class="cell-row">
                 <div class="col-sm-2 cell-image">
                     <img src="/src/assets/upload-dataset.png" height="100%">
                 </div>
                 <div class="col-sm-10">
-                    <a class="cell-title">Datasets</a>
+                    <a class="cell-title">Dataset</a>
                     <div>
                         <a class="cell-description">Import a structured folder of images.</a>
                     </div>
