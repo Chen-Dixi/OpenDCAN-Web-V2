@@ -9,7 +9,7 @@
         </el-aside>
         <el-main class="datasets-main-list">
           <div style="padding-bottom: 40px">
-            <el-dropdown class="float-right" trigger="click" >
+            <el-dropdown class="float-right" trigger="click" ref="dropdown_import">
               <el-button>导入</el-button>
               <template #dropdown>
                 <upload-dataset-dropdown-menu @command="import_dataset"/>
@@ -21,6 +21,8 @@
               :headers="uploadHeader"
               :action="datasetUploadUrl"
               :on-success="handleUploadSuccess"
+              :on-error="handleUploadError"
+              :on-exceed="handleExceed"
               :show-file-list="false"
             >
               <div ref="inner-upload"></div>
@@ -38,7 +40,8 @@
 import DatasetListCell from '../components/DatasetListCell.vue'
 
 import globalConfig from '../common/config'
-import type {UploadInstance, UploadFile, UploadFiles} from 'element-plus'
+import type {UploadInstance, UploadFile, UploadFiles, UploadRawFile} from 'element-plus'
+import {genFileId} from 'element-plus'
 import {ref} from 'vue'
 import {useCookies} from 'vue3-cookies'
 const {cookies} = useCookies()
@@ -91,11 +94,29 @@ export default {
       }
     },
     handleUploadSuccess(response: any, uploadFile: UploadFile, uploadFiles: UploadFiles) {
-        console.log(response.data)
-        this.$notify.success({
-          title: '成功',
-          message: '上传成功',});
+      // console.log(response) // {filename: '头图.png'}
+      this.$notify.success({
+        title: '成功',
+        message: '上传成功',});
+      this.$refs['dropdown_import'].handleClose();
+      this.datasetUploadRef.clearFiles()
     },
+    handleUploadError(err: Error, uploadFile: UploadFile, uploadFiles: UploadFiles) {
+      // 这里的Error 类型 是 typescript 自带的类型
+      let error = eval('(' + err.message + ')');
+      this.$notify.error({
+        title: '错误',
+        message: error.detail
+      })
+      this.$refs['dropdown_import'].handleClose();
+    },
+    handleExceed(files: File[], uploadFiles: UploadFiles){
+      console.log(uploadFiles)
+      const file = files[0] as UploadRawFile
+      file.uid = genFileId()
+      this.datasetUploadRef.handleStart(file)
+      this.datasetUploadRef.submit()
+    }
   }
 }
 </script>

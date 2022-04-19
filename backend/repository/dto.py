@@ -53,15 +53,27 @@ class PydanticTargetDatasetGetter(GetterDict):
             return True if val == 1 else False
         else:
             return getattr(self._obj, key, default)
-class TargetDatsetDto(BaseModel):
-    id : int
-    title : str
-    description : str
-    file_path : str
+class TargetDatasetDto(BaseModel):
+    # id : int
+    title : Optional[str]
+    description : Optional[str]
+    username : str
+    file_path : Optional[str]
     create_name : str
     update_name : str
     is_active : bool
-
+    state : int
+    
     class Config:
         orm_mode = True
         getter_dict = PydanticTargetDatasetGetter
+
+class CreateTargetDatasetRecord(BaseModel):
+    file_path : str
+    username : str
+    create_name : str
+
+class QueryTargetDatasetDto(BaseModel):
+    limit: int
+    offset: int
+    username: str

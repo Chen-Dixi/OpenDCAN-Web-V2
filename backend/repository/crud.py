@@ -1,8 +1,13 @@
+from typing import List
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
-from . import entity, dto
 
 from passlib.context import CryptContext
+
+from . import entity, dto
+from settings import RECORD_LIMIT
+
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -37,3 +42,33 @@ def create_user(db: Session, user: dto.CreateUserDTO):
     # refresh your instance (so that it contains any new data from the database, like the generated ID).
     db.refresh(db_user)
     return db_user
+
+
+# ==================
+# Target Dataset Record
+def create_target_dataset_record(db: Session, create_dto: dto.CreateTargetDatasetRecord):
+    db_target_dataset = entity.TargetDatasetRecord(file_path = create_dto.file_path,
+                                                   username = create_dto.username,
+                                                   create_name = create_dto.create_name,
+                                                   update_name = create_dto.create_name)
+    now_time = datetime.now(timezone.utc)
+    now_time = int(datetime.timestamp(now_time)*1000)
+    db_target_dataset.create_time = now_time
+    db_target_dataset.update_time = now_time
+    db_target_dataset.is_active = 1
+    db_target_dataset.state = 2
+    db.add(db_target_dataset)
+    db.commit()
+    db.refresh(db_target_dataset)
+    return db_target_dataset
+
+def update_target_dataset(file_path, folder_path, db: Session):
+    record = db.query(entity.TargetDatasetRecord).filter(entity.TargetDatasetRecord.file_path == file_path).update({'state':1,'file_path':folder_path})
+    db.commit()
+
+def get_target_dataset_records_by_username(db: Session, username: str, offset:int = 0, limit = RECORD_LIMIT) -> List[entity.TargetDatasetRecord]:
+    return db.query(entity.TargetDatasetRecord) \
+             .filter(entity.TargetDatasetRecord.username == username, entity.TargetDatasetRecord.is_active == 1) \
+             .offset(offset) \
+             .limit(limit) \
+             .all()

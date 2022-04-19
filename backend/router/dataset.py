@@ -1,23 +1,24 @@
 from typing import List
 from os import path
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, BackgroundTasks
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
-
-from domain.model import User
 from dependencies import get_current_active_user, get_db, pwd_context
-from repository.database import SessionLocal
-from repository import dto, entity, crud
-from common import utils
-from settings import dataset_upload_path
+from repository import entity, dto
+
+from domain import dataset_service
+
 router = APIRouter(
     prefix="/dataset",
     tags=["dataset"]
 )
 
+async def unzip_the_target_dataset(file_path: str, db: Session):
+    await dataset_service.unpack_dataset_archive(file_path, db)
+
 @router.post("/target/upload")
-async def uplaod_target_dataset(file: UploadFile, user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+async def uplaod_target_dataset(file: UploadFile, background_tasks: BackgroundTasks, user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
     """
     🤔 这里是不是创建了两个 db session. answer: 不会, 拿到的是同一个, 会从类似 threadLocal的东西里去取db session
     <sqlalchemy.orm.session.Session object at 0x7f9b927e4dd8>\n
@@ -28,25 +29,10 @@ async def uplaod_target_dataset(file: UploadFile, user: entity.User = Depends(ge
     3. 更新数据库 表 target_dataset_record
     4. 返回
     """
-    
-    # db_user = crud.get_user_by_email(db, user.email)
-    # if db_user:
-    #     raise HTTPException(status_code=400, detail="Email already registered")
-    # db_user = crud.get_user_by_username(db, user.username)
-    # if db_user:
-    #     raise HTTPException(status_code=400, detail="Username already registered")
-    # # automatically orm
-    # user.password = pwd_context.hash(user.password)
-    # return crud.create_user(db, user)
-    content = await file.read()
-    filename = file.filename
-    
-    suffix = filename[filename.index('.'):]
-    
-    filename = utils.generateUUID()+suffix
-    save_path = path.join(dataset_upload_path, 'target_dataset', filename)
-    with open(save_path,'wb') as f:
-        f.write(content)
+    db_dataset_record = dataset_service.upload_target_dataset(file, user, db)
+
+    # send asynchronous message to unzip the file
+    background_tasks.add_task(unzip_the_target_dataset, (await db_dataset_record).file_path, db)
     
     return {"filename": file.filename}
 
@@ -77,6 +63,12 @@ def uplaod_source_dataset(file: UploadFile, user: entity.User = Depends(get_curr
 async def delete_file(dataset_name:str):
     
     return {'detail':0}
+
+@router.get("/target/list", response_model=List[dto.TargetDatasetDto])
+async def get_target_dataset_list(createDto: dto.QueryTargetDatasetDto, db: Session = Depends(get_db)):
+    records = await dataset_service.get_target_records(createDto, db)
+    # records_dto = [dto.TargetDatasetDto.from_orm(record) for record in records]
+    return records
 
 @router.get("/")
 async def main():

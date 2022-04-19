@@ -2,4 +2,7 @@ allow_cors_origins = [
     "http://localhost:3000"
 ]
 
-dataset_upload_path="./_data"
+DATASET_UPLOAD_PATH="_data/"
+
+UPLOAD_DATASET_EXTENSIONS = ['.zip', '.tar.gz', '.tar']
+RECORD_LIMIT = 10

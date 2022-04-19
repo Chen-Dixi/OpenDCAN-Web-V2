@@ -1,3 +1,4 @@
+from email.policy import default
 from operator import index
 from sqlalchemy import BIGINT, Column, ForeignKey, Integer, String, VARCHAR
 
@@ -11,8 +12,8 @@ class User(Base):
     hashed_password = Column(VARCHAR)
     username = Column(VARCHAR)
     display_name = Column(VARCHAR)
-    user_type = Column(Integer, default=1)
-    is_active = Column(Integer, default=1)
+    user_type = Column(Integer, default=1) # 1 管理员; 2 普通用户
+    is_active = Column(Integer, default=1) # 1 active; 2 disabled
     create_time = Column(BIGINT)
     update_time = Column(BIGINT)
 
@@ -23,8 +24,10 @@ class TargetDatasetRecord(Base):
     title = Column(VARCHAR)
     description = Column(VARCHAR)
     file_path = Column(VARCHAR)
+    username = Column(VARCHAR)
+    state = Column(Integer, default=2)  # 1 ready, 2 not ready
     create_name = Column(VARCHAR)
     update_name = Column(VARCHAR)
-    is_active = Column(Integer, default=1)
+    is_active = Column(Integer, default=1) # 1 active; 2 disabled
     create_time = Column(BIGINT)
     update_time = Column(BIGINT)

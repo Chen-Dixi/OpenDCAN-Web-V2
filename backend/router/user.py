@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from domain.model import User
 from dependencies import get_current_active_user, get_db, pwd_context
 from repository.database import SessionLocal
 from repository import dto, entity, crud
@@ -13,7 +12,6 @@ router = APIRouter(
 
 @router.get("/me", response_model=dto.UserDTO)
 async def read_users_me(current_user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
-    print(db)
     return current_user
 
 @router.get("/me/items/")

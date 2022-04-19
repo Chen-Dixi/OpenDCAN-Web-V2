@@ -8,3 +8,4 @@ python-jose==3.3.0
 passlib==1.7.4
 SQLAlchemy==1.4.32
 PyMySQL==1.0.2
+pika==1.2.0

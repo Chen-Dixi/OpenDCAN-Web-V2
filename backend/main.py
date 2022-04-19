@@ -1,17 +1,17 @@
 from datetime import datetime, timedelta
+import os
 from jose import jwt
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 
-from domain.model import *
 from router import user, dataset
 from dependencies import oauth2_scheme, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, get_db
 from settings import allow_cors_origins
 from repository import dto, crud
-
 # create database table, skip this if there already has one
 # entity.Base.metadata.create_all(bind=engine)
 
@@ -57,6 +57,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 async def read_token(token: str = Depends(oauth2_scheme)):
     return {"token": token}
 
+# 登录 放在了 main.py 🤔
 @app.post("/login", response_model=dto.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)

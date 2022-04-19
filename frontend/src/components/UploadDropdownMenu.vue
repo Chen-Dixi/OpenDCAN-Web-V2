@@ -35,7 +35,7 @@
                 <div class="col-sm-10">
                     <a class="cell-title">Dataset</a>
                     <div>
-                        <a class="cell-description">Import a structured folder of images.</a>
+                        <a class="cell-description">Import a structured folder of images. File must ends with one of [.zip .tar.gz, .tar]</a>
                     </div>
                 </div>
             </div>
