@@ -76,7 +76,7 @@ export default {
         formData.append(key, hackVal);
       });
       requests.Login(formData, this).then(res => {
-        console.log(res)
+        // console.log(res)
         let data = res.data;
         this.$cookies.set('access_token', data.access_token, globalConfig.cookieExpire);
         this.$cookies.set('username', data.username, globalConfig.cookieExpire);

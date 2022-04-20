@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Optional, Any, List
 from pydantic import BaseModel
 from pydantic.utils import GetterDict
 class UserBaseDTO(BaseModel):
@@ -54,7 +54,7 @@ class PydanticTargetDatasetGetter(GetterDict):
         else:
             return getattr(self._obj, key, default)
 class TargetDatasetDto(BaseModel):
-    # id : int
+    id : int
     title : Optional[str]
     description : Optional[str]
     username : str
@@ -77,3 +77,8 @@ class QueryTargetDatasetDto(BaseModel):
     limit: int
     offset: int
     username: str
+    ipp: int
+
+class QueryTargetDatasetResponse(BaseModel):
+    datasets: Optional[List[TargetDatasetDto]]
+    maxPage: int

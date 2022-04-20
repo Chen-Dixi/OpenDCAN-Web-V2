@@ -3,7 +3,7 @@ import config from './config'
 import {useCookies} from 'vue3-cookies'
 const {cookies} = useCookies()
 
-const request = (url, options = {}, method = 'get', _this, autoCatch = true) => {
+const request = (url, options = {}, method = 'get', _this, autoCatch = true, bodyGet = false) => {
   let headers = {};
   if (!url.endsWith('login') && !url.endsWith('register') && !url.endsWith('forgetPassword')) {
     headers = {
@@ -12,6 +12,7 @@ const request = (url, options = {}, method = 'get', _this, autoCatch = true) => 
   }
 
   let key = ~['get', 'head', 'options'].indexOf(method) ? 'params' : 'data';
+  
   let apiUrl = config.backend_service_url;
   let promise = axios(
     Object.assign({
@@ -56,9 +57,19 @@ const axiosRegister = (data, _this) => {
   return request('/users/register', data, 'post', _this);
 };
 
+const axiosDatasetList = (data, _this) => {
+  return request('/dataset/target/list', data, 'get', _this, true, true)
+}
+
+const axiosTaskList = (data, _this) => {
+  return request('/task/list', data, 'get', _this)
+}
+
 let requests = {
     Login: axiosLogin,
     Register: axiosRegister,
+    GetDatasetList: axiosDatasetList,
+    GetTaskList: axiosTaskList,
 };
 
 export default requests;

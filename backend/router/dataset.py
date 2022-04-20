@@ -64,11 +64,15 @@ async def delete_file(dataset_name:str):
     
     return {'detail':0}
 
-@router.get("/target/list", response_model=List[dto.TargetDatasetDto])
-async def get_target_dataset_list(createDto: dto.QueryTargetDatasetDto, db: Session = Depends(get_db)):
-    records = await dataset_service.get_target_records(createDto, db)
+@router.get("/target/list", response_model = dto.QueryTargetDatasetResponse)
+async def get_target_dataset_list(limit: int,
+    offset: int,
+    username: str,
+    ipp: int, user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+
+    result = await dataset_service.get_target_records(limit, offset, username, ipp, db)
     # records_dto = [dto.TargetDatasetDto.from_orm(record) for record in records]
-    return records
+    return result
 
 @router.get("/")
 async def main():

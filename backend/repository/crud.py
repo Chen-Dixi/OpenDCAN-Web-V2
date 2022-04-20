@@ -7,8 +7,6 @@ from passlib.context import CryptContext
 from . import entity, dto
 from settings import RECORD_LIMIT
 
-
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # 返回的都是 entity model
@@ -66,9 +64,18 @@ def update_target_dataset(file_path, folder_path, db: Session):
     record = db.query(entity.TargetDatasetRecord).filter(entity.TargetDatasetRecord.file_path == file_path).update({'state':1,'file_path':folder_path})
     db.commit()
 
-def get_target_dataset_records_by_username(db: Session, username: str, offset:int = 0, limit = RECORD_LIMIT) -> List[entity.TargetDatasetRecord]:
-    return db.query(entity.TargetDatasetRecord) \
+def get_target_dataset_records_by_username(db: Session, username: str, offset:int = 0, limit = RECORD_LIMIT, return_total_count: bool = False) -> List[entity.TargetDatasetRecord]:
+    records = db.query(entity.TargetDatasetRecord) \
              .filter(entity.TargetDatasetRecord.username == username, entity.TargetDatasetRecord.is_active == 1) \
              .offset(offset) \
              .limit(limit) \
              .all()
+    if return_total_count:
+        count = db.query(entity.TargetDatasetRecord) \
+             .filter(entity.TargetDatasetRecord.username == username, entity.TargetDatasetRecord.is_active == 1).count()
+        return records, count
+    return records
+
+def get_target_dataset_records_by_username_count(db: Session, username: str) -> int:
+    return db.query(entity.TargetDatasetRecord) \
+             .filter(entity.TargetDatasetRecord.username == username, entity.TargetDatasetRecord.is_active == 1).count()

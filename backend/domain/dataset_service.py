@@ -34,7 +34,13 @@ async def unpack_dataset_archive(filepath: str, db: Session):
     shutil.unpack_archive(filename=filepath, extract_dir=extrac_dir)
     crud.update_target_dataset(filepath, extrac_dir, db)
     
-async def get_target_records(createDto: dto.QueryTargetDatasetDto, db: Session):
+async def get_target_records(limit: int,
+    offset: int,
+    username: str,
+    ipp: int,
+    db: Session):
     
-    return crud.get_target_dataset_records_by_username(db, createDto.username, createDto.offset, createDto.limit)
+    result = crud.get_target_dataset_records_by_username(db, username, offset, limit, return_total_count=True)
+
+    return {"datasets": result[0], "maxPage": (result[1]-1)//ipp + 1 }
     
