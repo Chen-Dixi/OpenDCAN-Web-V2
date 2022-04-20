@@ -2,15 +2,41 @@
     <el-main class="tasks-main-wrapper">
         <div class="table-wrapper">
             <el-table :data="tasks" styel="width: 100%">
-                <el-table-column  label="任务类型" width="150px"/>
+                <!--
+                id : int
+                name : int
+                username : int
+                state : int  # 1 ready, 2 not ready
+                source_id : int
+                source_name : str
+                target_id : int
+                target_name : str
+
+                is_active : bool # 1 active; 2 disabled
+                create_time : datetime
+                update_time : datetime
+                -->
                 <el-table-column prop="name" label="名称" width="180px"/>
-                <el-table-column prop="address" label="源域数据集" width="220px"/>
-                <el-table-column label="目标域数据集" width="220"/>
-                <el-table-column prop="date" label="创建日期" />
-                <el-table-column label="任务状态"/>
-                <el-table-column label="操作"/>
+                <el-table-column prop="source_name" label="源域数据集" width="220px"/>
+                <el-table-column prop="target_name" label="目标域数据集" width="220"/>
+                <el-table-column prop="create_time" label="创建日期"/>
+                <el-table-column prop="state" label="任务状态"/> <!-- TBD自定义 -->
+                <el-table-column label="操作">
+                  <template #default="scope">
+                    <el-button size="small" @click="handleEdit(scope.row)">查看</el-button>
+                  </template>  
+                </el-table-column>> <!-- TBD自定义 -->
             </el-table>
+            <el-pagination
+              @current-change="handleCurrentChange"
+              :current-page="currentPage"
+              :page-size="ipp"
+              :page-count="maxPage"
+              background
+              layout="prev, pager, next">
+            </el-pagination>
         </div>
+        
     </el-main>
 </template>
 <script lang="ts" setup>
@@ -61,9 +87,9 @@ const {cookies} = useCookies()
 export default {
   data() {
     return {
-      totalItems: 0,
+      maxPage: 1,
       currentPage: 1,
-      ipp: 6,
+      ipp: 10,
       tasks: []
     }
   },
@@ -72,15 +98,24 @@ export default {
     this.$emit('didSelectTab', 'tasks')
   },
   methods: {
+    handleCurrentChange (currentPage) {
+      this.getTaskList(this.currentPage);
+    },
     getTaskList (currentPage, q='') {
-      let params = {ipp: this.ipp, limit: this.ipp, offset: (currentPage-1)*this.ipp, username: cookies.get('username')};
+      let params = {ipp: this.ipp, offset: (currentPage-1)*this.ipp};
       requests.GetTaskList(params, this).then(res => {
-        this.totalItems = res.data.maxPage * this.ipp;
+        this.maxPage = res.data.maxPage
         this.tasks = res.data.tasks;
         // console.log(this.datasets);
       })
     },
-  }
+    handleEdit(row) {
+      this.$router.push('/task/'+row.id)
+    }
+  },
+  created() {
+    this.getTaskList(this.currentPage);
+  },
 }
 </script>
 

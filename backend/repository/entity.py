@@ -72,7 +72,7 @@ class ModelRecord(Base):
   `task_id` int NOT NULL COMMENT '所属task id',
   `file_path` varchar(128) DEFAULT NULL COMMENT '文件在系统中的路径位置, 包含文件名',
   `model_type` tinyint DEFAULT NULL COMMENT '模型类型, 1 PyTorch 2 Tensorflow 暂时用不到',
-  `state` tinyint NOT NULL DEFAULT '2' COMMENT '1: TRAINING 2: READY READY状态下才能被选择用于推理标注',
+  `state` tinyint NOT NULL DEFAULT '2' COMMENT '1: READY 2: TRAINING READY状态下才能被选择用于推理标注',
   `source_id` int DEFAULT NULL COMMENT '源域数据集id',
   `source_name` varchar(120) DEFAULT NULL COMMENT '源域数据集名称, 冗余字段',
   `target_id` int DEFAULT NULL COMMENT '目标域数据集id',
@@ -85,14 +85,14 @@ class ModelRecord(Base):
   CONSTRAINT `pk_id` PRIMARY KEY (`id`),
   KEY `model_record_idx_task_id` (`task_id`) USING BTREE
     """
-    __tablename__ = "task_record"
+    __tablename__ = "model_record"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(VARCHAR)
     task_id = Column(Integer, index=True)
     file_path = Column(VARCHAR)
     model_type = Column(VARCHAR)
-    state = Column(Integer, default=1)  # 1 ready, 2 not ready
+    state = Column(Integer, default=2)  # 1 ready, 2 training
     source_id = Column(Integer)
     source_name = Column(VARCHAR)
     target_id = Column(Integer)

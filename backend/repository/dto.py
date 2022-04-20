@@ -1,3 +1,5 @@
+from datetime import datetime
+from distutils.command.config import config
 from typing import Optional, Any, List
 from pydantic import BaseModel
 from pydantic.utils import GetterDict
@@ -53,7 +55,7 @@ class PydanticTargetDatasetGetter(GetterDict):
             return True if val == 1 else False
         else:
             return getattr(self._obj, key, default)
-class TargetDatasetDto(BaseModel):
+class TargetDatasetRecordDto(BaseModel):
     id : int
     title : Optional[str]
     description : Optional[str]
@@ -80,5 +82,44 @@ class QueryTargetDatasetDto(BaseModel):
     ipp: int
 
 class QueryTargetDatasetResponse(BaseModel):
-    datasets: Optional[List[TargetDatasetDto]]
+    datasets: Optional[List[TargetDatasetRecordDto]]
     maxPage: int
+
+class PydanticTaskRecordGetter(GetterDict):
+    date_keys = ['create_time', 'update_time']
+
+    def get(self, key: str, default: Any) -> Any:
+        if key == 'is_active':
+            val = getattr(self._obj, key)
+            return True if val == 1 else False
+        elif key in self.date_keys:
+            val = getattr(self._obj, key)
+            # 【13位毫秒精度数字】转换成【时间戳】
+            return datetime.fromtimestamp(val//1000).strftime("%Y-%m-%d")
+        else:
+            return getattr(self._obj, key, default)
+
+class TaskRecordDto(BaseModel):
+    id : int
+    name : str
+    username : str
+    state : int  # 1 ready, 2 not ready
+    source_id : Optional[int]
+    source_name : Optional[str]
+    target_id : Optional[int]
+    target_name : Optional[str]
+
+    is_active : bool # 1 active; 2 disabled
+    create_time : str
+    update_time : str
+
+    class Config:
+        orm_mode = True
+        getter_dict = PydanticTaskRecordGetter
+
+class QueryTaskRecordResponse(BaseModel):
+    tasks: Optional[List[TaskRecordDto]]
+    maxPage: int
+
+class CreateTaskDto(BaseModel):
+    task_name: str

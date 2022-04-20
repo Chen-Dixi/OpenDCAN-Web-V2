@@ -1,11 +1,12 @@
 from typing import List
+from matplotlib import offsetbox
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 
 from passlib.context import CryptContext
 
 from . import entity, dto
-from settings import RECORD_LIMIT
+from settings import RECORD_LIMIT, TASK_LIST_IPP
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -29,7 +30,9 @@ def create_user(db: Session, user: dto.CreateUserDTO):
                           user_type = user.user_type,
                           display_name = user.display_name)
 
-    now_time = datetime.now(timezone.utc).microsecond # 毫秒 13位数字
+    # now_time = datetime.now(timezone.utc).microsecond # 毫秒 13位数字
+    now_time = datetime.now(timezone.utc)
+    now_time = int(datetime.timestamp(now_time)*1000)
     db_user.create_time = now_time
     db_user.update_time = now_time
     db_user.is_active = 1
@@ -79,3 +82,44 @@ def get_target_dataset_records_by_username(db: Session, username: str, offset:in
 def get_target_dataset_records_by_username_count(db: Session, username: str) -> int:
     return db.query(entity.TargetDatasetRecord) \
              .filter(entity.TargetDatasetRecord.username == username, entity.TargetDatasetRecord.is_active == 1).count()
+
+def get_task_records_by_username(
+    db: Session,
+    username: str,
+    offset: int,
+    limit: int = TASK_LIST_IPP
+    ):
+    records = db.query(entity.TaskRecord) \
+                .filter(entity.TaskRecord.username == username, entity.TaskRecord.is_active == 1) \
+                .order_by(entity.TaskRecord.update_time) \
+                .offset(offset) \
+                .limit(limit) \
+                .all()
+    count = db.query(entity.TaskRecord) \
+                .filter(entity.TaskRecord.username == username, entity.TaskRecord.is_active == 1) \
+                .count()
+
+    return records, count
+
+def create_task_record(db: Session, task_name: str, username: str):
+    """
+    新建任务 task_record
+    """
+    db_task = entity.TaskRecord(
+        name = task_name,
+        username = username
+    )
+    
+    now_time = datetime.now(timezone.utc)
+    now_time = int(datetime.timestamp(now_time)*1000)
+    db_task.create_time = now_time
+    db_task.update_time = now_time
+    db_task.is_active = 1
+    db_task.state = 2
+    db_task.create_name = username
+    db_task.update_name = username
+
+    db.add(db_task)
+    db.commit()
+    db.refresh(db_task)
+    return db_task

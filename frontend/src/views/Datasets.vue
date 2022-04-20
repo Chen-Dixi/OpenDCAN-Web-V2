@@ -34,7 +34,7 @@
             @current-change="handleCurrentChange"
             :current-page="currentPage"
             :page-size="6"
-            :total="totalItems"
+            :page-count="maxPage"
             background
             layout="prev, pager, next">
           </el-pagination>
@@ -71,8 +71,8 @@ export default {
         { name: 'Image Classification', badge:'3' },
         { name: 'Action Recognition', badge:'1' },
       ],
-      totalItems: 0,
       currentPage: 1,
+      maxPage: 1,
       ipp: 6,
       // datasets: [
       //   {id:1, title:'手写数字体', description:'自己的手写数字体，用来训练能识别自己手写数字的模型', imageUrl:'https://production-media.paperswithcode.com/thumbnails/dataset/dataset-0000000001-f66c5dc9_UOPLOsj.jpg'},
@@ -145,7 +145,7 @@ export default {
     getDatasetList (currentPage, q='') {
       let params = {ipp: this.ipp, limit: this.ipp, offset: (currentPage-1)*this.ipp, username: cookies.get('username')};
       requests.GetDatasetList(params, this).then(res => {
-        this.totalItems = res.data.maxPage * this.ipp;
+        this.maxPage = res.data.maxPage;
         this.datasets = res.data.datasets;
         // console.log(this.datasets);
       })

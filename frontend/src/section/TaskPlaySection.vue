@@ -44,11 +44,13 @@ const handleRemove: UploadProps['onRemove'] = (uploadFile, uploadFiles) => {
 }
 
 const handleOnChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
-  if (uploadFiles.length === 1){
+  if (uploadFiles.length === 1 && beforeImageUpload(uploadFile.raw)){
     imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+  }else if (uploadFiles.length === 1) {
+    uploadRef.value!.clearFiles()
+    imageUrl.value = ''
   }
 }
-
 
 const handleExceed: UploadProps['onExceed'] = (files) => {
   uploadRef.value!.clearFiles()

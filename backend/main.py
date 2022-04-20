@@ -8,7 +8,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 
-from router import user, dataset
+from router import user, dataset, task
 from dependencies import oauth2_scheme, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, get_db
 from settings import allow_cors_origins
 from repository import dto, crud
@@ -18,6 +18,7 @@ from repository import dto, crud
 app = FastAPI()
 app.include_router(user.router)
 app.include_router(dataset.router)
+app.include_router(task.router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_cors_origins,

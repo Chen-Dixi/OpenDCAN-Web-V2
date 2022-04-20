@@ -12,7 +12,7 @@ import {Edit} from '@element-plus/icons-vue'
     <el-container>
         <el-aside  width="280px">
             <div class="menu-header">
-                <span>办公生活用品标注项目  </span>
+                <span>办公生活用品标注项目</span>
                 <el-icon><edit /></el-icon>
             </div>
             <el-menu
