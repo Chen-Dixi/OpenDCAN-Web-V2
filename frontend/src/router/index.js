@@ -34,7 +34,7 @@ const routes = [
             }
         ]
     },{
-        path: '/task/:id',
+        path: '/task/:taskId',
         component: TaskView,
         children: [
             {

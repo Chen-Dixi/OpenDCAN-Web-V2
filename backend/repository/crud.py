@@ -48,7 +48,8 @@ def create_user(db: Session, user: dto.CreateUserDTO):
 # ==================
 # Target Dataset Record
 def create_target_dataset_record(db: Session, create_dto: dto.CreateTargetDatasetRecord):
-    db_target_dataset = entity.TargetDatasetRecord(file_path = create_dto.file_path,
+    db_target_dataset = entity.TargetDatasetRecord(title = create_dto.title,
+                                                   file_path = create_dto.file_path,
                                                    username = create_dto.username,
                                                    create_name = create_dto.create_name,
                                                    update_name = create_dto.create_name)
@@ -67,7 +68,7 @@ def update_target_dataset(file_path, folder_path, db: Session):
     record = db.query(entity.TargetDatasetRecord).filter(entity.TargetDatasetRecord.file_path == file_path).update({'state':1,'file_path':folder_path})
     db.commit()
 
-def get_target_dataset_records_by_username(db: Session, username: str, offset:int = 0, limit = RECORD_LIMIT, return_total_count: bool = False) -> List[entity.TargetDatasetRecord]:
+def get_target_dataset_records_by_username_count(db: Session, username: str, offset:int = 0, limit = RECORD_LIMIT, return_total_count: bool = False) -> List[entity.TargetDatasetRecord]:
     records = db.query(entity.TargetDatasetRecord) \
              .filter(entity.TargetDatasetRecord.username == username, entity.TargetDatasetRecord.is_active == 1) \
              .offset(offset) \
@@ -79,9 +80,9 @@ def get_target_dataset_records_by_username(db: Session, username: str, offset:in
         return records, count
     return records
 
-def get_target_dataset_records_by_username_count(db: Session, username: str) -> int:
+def get_target_dataset_records_by_username(db: Session, username: str) -> int:
     return db.query(entity.TargetDatasetRecord) \
-             .filter(entity.TargetDatasetRecord.username == username, entity.TargetDatasetRecord.is_active == 1).count()
+             .filter(entity.TargetDatasetRecord.username == username, entity.TargetDatasetRecord.is_active == 1).all()
 
 def get_task_records_by_username(
     db: Session,
@@ -100,6 +101,17 @@ def get_task_records_by_username(
                 .count()
 
     return records, count
+
+def get_task_record_by_id(
+    db: Session,
+    taskId: int
+    ) -> entity.TaskRecord:
+    db_task = db.query(entity.TaskRecord) \
+                .filter(entity.TaskRecord.id == taskId, entity.TaskRecord.is_active == 1) \
+                .first()
+    
+
+    return db_task
 
 def create_task_record(db: Session, task_name: str, username: str):
     """

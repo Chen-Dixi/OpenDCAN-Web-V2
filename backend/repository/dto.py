@@ -3,6 +3,7 @@ from distutils.command.config import config
 from typing import Optional, Any, List
 from pydantic import BaseModel
 from pydantic.utils import GetterDict
+from uvicorn import Config
 class UserBaseDTO(BaseModel):
     email: str
     username: str
@@ -70,7 +71,15 @@ class TargetDatasetRecordDto(BaseModel):
         orm_mode = True
         getter_dict = PydanticTargetDatasetGetter
 
+class TargetDatasetRecordSelection(BaseModel):
+    id: int
+    title: Optional[str]
+
+    class Config:
+        orm_mode = True
+
 class CreateTargetDatasetRecord(BaseModel):
+    title: str
     file_path : str
     username : str
     create_name : str
@@ -84,6 +93,9 @@ class QueryTargetDatasetDto(BaseModel):
 class QueryTargetDatasetResponse(BaseModel):
     datasets: Optional[List[TargetDatasetRecordDto]]
     maxPage: int
+
+class QueryTargetDatasetSelectionResponse(BaseModel):
+    selections: List[TargetDatasetRecordSelection]
 
 class PydanticTaskRecordGetter(GetterDict):
     date_keys = ['create_time', 'update_time']

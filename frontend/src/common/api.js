@@ -61,15 +61,25 @@ const axiosDatasetList = (data, _this) => {
   return request('/dataset/target/list', data, 'get', _this, true, true)
 }
 
-const axiosTaskList = (data, _this) => {
+const axiosTargetSelectionList = (data, _this) => {
+  return request('/dataset/target/list_selection', data, 'get', _this)
+}
+
+const axiosGetTaskList = (data, _this) => {
   return request('/task/list', data, 'get', _this)
+}
+
+const axiosGetTask = (taskId, params, _this) => {
+  return request('/task/detail/' + taskId, params, 'get', _this);
 }
 
 let requests = {
     Login: axiosLogin,
     Register: axiosRegister,
     GetDatasetList: axiosDatasetList,
-    GetTaskList: axiosTaskList,
+    GetTaskList: axiosGetTaskList,
+    GetTargetSelection: axiosTargetSelectionList,
+    GetTask: axiosGetTask,
 };
 
 export default requests;

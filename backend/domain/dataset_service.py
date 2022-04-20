@@ -11,10 +11,10 @@ from settings import DATASET_UPLOAD_PATH, UPLOAD_DATASET_EXTENSIONS
 
 async def upload_target_dataset(file: UploadFile, user: entity.User, db: Session) -> entity.TargetDatasetRecord:
     content = await file.read()
-    filename = file.filename
-    if not any(filename.endswith(ext) for ext in UPLOAD_DATASET_EXTENSIONS):
+    origin_filename = file.filename
+    if not any(origin_filename.endswith(ext) for ext in UPLOAD_DATASET_EXTENSIONS):
         raise HTTPException(status_code=400, detail="File is not an allowed extension.")
-    suffix = filename[filename.index('.'):]
+    suffix = origin_filename[origin_filename.index('.'):]
     
     filename = utils.generateUUID()+suffix
     save_dir = os.path.join(DATASET_UPLOAD_PATH, 'target_dataset')
@@ -24,7 +24,7 @@ async def upload_target_dataset(file: UploadFile, user: entity.User, db: Session
     with open(save_path,'wb') as f:
         f.write(content)
     
-    create_dto = dto.CreateTargetDatasetRecord(file_path=save_path, username = user.username, create_name=user.username)
+    create_dto = dto.CreateTargetDatasetRecord(title=origin_filename, file_path=save_path, username = user.username, create_name=user.username)
     db_target_dataset = crud.create_target_dataset_record(db, create_dto)
     return db_target_dataset
     
@@ -40,7 +40,10 @@ async def get_target_records(limit: int,
     ipp: int,
     db: Session):
     
-    result = crud.get_target_dataset_records_by_username(db, username, offset, limit, return_total_count=True)
+    result = crud.get_target_dataset_records_by_username_count(db, username, offset, limit, return_total_count=True)
 
     return {"datasets": result[0], "maxPage": (result[1]-1)//ipp + 1 }
-    
+
+async def get_target_selection(username: str, db: Session):
+    result = crud.get_target_dataset_records_by_username(db, username)
+    return result

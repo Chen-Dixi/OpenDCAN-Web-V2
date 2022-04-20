@@ -67,12 +67,16 @@ async def delete_file(dataset_name:str):
 @router.get("/target/list", response_model = dto.QueryTargetDatasetResponse)
 async def get_target_dataset_list(limit: int,
     offset: int,
-    username: str,
     ipp: int, user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
 
-    result = await dataset_service.get_target_records(limit, offset, username, ipp, db)
+    result = await dataset_service.get_target_records(limit, offset, user.username, ipp, db)
     # records_dto = [dto.TargetDatasetDto.from_orm(record) for record in records]
     return result
+
+@router.get("/target/list_selection", response_model=dto.QueryTargetDatasetSelectionResponse)
+async def get_target_dataset_selection(user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    result = await dataset_service.get_target_selection(user.username, db)
+    return {'selections': result}
 
 @router.get("/")
 async def main():

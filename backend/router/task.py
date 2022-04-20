@@ -26,3 +26,8 @@ async def get_target_dataset_list(ipp: int,
 async def create_task(createDto: dto.CreateTaskDto, user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
     task_dto = await task_service.create_task_record(createDto.task_name, user.username, db)
     return task_dto
+
+@router.get("/detail/{taskId}", response_model=dto.TaskRecordDto)
+async def get_task(taskId: int, user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    task_dto = await task_service.get_task_detail(taskId, user.username, db)
+    return task_dto

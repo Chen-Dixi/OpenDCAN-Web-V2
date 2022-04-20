@@ -143,7 +143,7 @@ export default {
       this.getDatasetList(this.currentPage);
     },
     getDatasetList (currentPage, q='') {
-      let params = {ipp: this.ipp, limit: this.ipp, offset: (currentPage-1)*this.ipp, username: cookies.get('username')};
+      let params = {ipp: this.ipp, limit: this.ipp, offset: (currentPage-1)*this.ipp};
       requests.GetDatasetList(params, this).then(res => {
         this.maxPage = res.data.maxPage;
         this.datasets = res.data.datasets;
