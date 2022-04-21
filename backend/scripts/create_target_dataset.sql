@@ -14,5 +14,5 @@ CREATE TABLE `target_dataset_record` (
   `update_time` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `target_dataset_record_file_path_IDX` (`file_path`) USING BTREE,
-  KEY `target_dataset_record_username_IDX` (`username`) USING BTREE
+  KEY `target_dataset_record_idx_username_updatetime` (`username`, `update_time`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -25,7 +25,13 @@ const userStore = useUserStore()
     </div>
     <nav class="header-nav">
         <el-link class="nav-link" :class="overviewSelectedClassObject" href="/">首页</el-link>
-        <el-link class="nav-link" :class="datasetsSelectedClassObject" href="/datasets">数据集</el-link>
+        <el-link class="nav-link" 
+            v-if="this.$cookies.isKey('access_token') && this.$cookies.get('is_admin')=='false'"
+            :class="datasetsSelectedClassObject" href="/datasets">数据集</el-link>
+        <el-link class="nav-link"
+            v-if="this.$cookies.isKey('access_token') && this.$cookies.get('is_admin')=='true'" 
+            :class="datasetsSelectedClassObject" 
+            href="/source_datasets">数据集</el-link>
         <el-link class="nav-link" :class="tasksSelectedClassObject" href="/tasks">任务</el-link>
     </nav>
     <div class="header-right">
@@ -67,6 +73,7 @@ export default {
         logout(command) {
             this.$cookies.remove('access_token')
             this.$cookies.remove('username')
+            this.$cookies.remove('is_admin')
             this.$router.push('/login')
         }
     }

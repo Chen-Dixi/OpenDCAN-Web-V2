@@ -6,6 +6,7 @@ const Login = () => import('../views/Login.vue')
 const Register = () => import('../views/Register.vue')
 const TaskList = () => import('../views/TaskList.vue')
 const Datasets = () => import('../views/Datasets.vue')
+const SourceDatasets = () => import('../views/SourceDatasets.vue')
 const TaskView = () => import('../views/Task.vue')
 const TaskDatasetSection = () => import('../section/TaskDatasetSection.vue')
 const TaskPlaySection = () => import('../section/TaskPlaySection.vue')
@@ -31,6 +32,9 @@ const routes = [
             },{
                 path: 'datasets',
                 component: Datasets
+            },{
+                path: 'source_datasets',
+                component: SourceDatasets
             }
         ]
     },{

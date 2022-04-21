@@ -1,8 +1,14 @@
+<script lang="ts" setup>
+const props = defineProps({
+  task_prop: Object
+})
+</script>
+
 <template>
-  TrainSection
+  TrainSection: {{task_prop.name}}
 </template>
 
-<script>
+<script lang="ts">
 export default {
 
 }

@@ -11,11 +11,11 @@ CREATE TABLE `model_record` (
   `source_name` varchar(120) DEFAULT NULL COMMENT '源域数据集名称, 冗余字段',
   `target_id` int DEFAULT NULL COMMENT '目标域数据集id',
   `target_name` varchar(120) DEFAULT NULL COMMENT '目标域数据集名称, 冗余字段',
-  `create_name` varchar(100) DEFAULT NULL COMMENT '上传数据集的人',
-  `update_name` varchar(100) DEFAULT NULL COMMENT '更新数据集信息的人',
+  `create_name` varchar(100) DEFAULT NULL COMMENT '启动模型训练的人',
+  `update_name` varchar(100) DEFAULT NULL COMMENT '更新模型信息的人',
   `is_active` tinyint NOT NULL DEFAULT '0' COMMENT '1 active; 2 deleted',
   `create_time` bigint DEFAULT NULL,
   `update_time` bigint DEFAULT NULL,
   CONSTRAINT `pk_id` PRIMARY KEY (`id`),
   KEY `model_record_idx_task_id` (`task_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

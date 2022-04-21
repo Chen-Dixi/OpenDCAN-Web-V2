@@ -16,10 +16,10 @@
               </template>
             </el-dropdown>
             <el-upload
-              ref="targetDatasetUploadRef"
+              ref="sourceDatasetUploadRef"
               :limit="1"
               :headers="uploadHeader"
-              :action="targetDatasetUploadUrl"
+              :action="sourceDatasetUploadUrl"
               :on-success="handleUploadSuccess"
               :on-error="handleUploadError"
               :on-exceed="handleExceed"
@@ -57,9 +57,9 @@ const {cookies} = useCookies()
 
 export default {
   setup(){
-    const targetDatasetUploadRef = ref<UploadInstance>()
+    const sourceDatasetUploadRef = ref<UploadInstance>()
     return {
-      targetDatasetUploadRef
+      sourceDatasetUploadRef
     }
   },
   components: {
@@ -89,7 +89,7 @@ export default {
       //   }
       // ],
       datasets: [],
-      targetDatasetUploadUrl: globalConfig.backend_service_url+'/dataset/target/upload',
+      sourceDatasetUploadUrl: globalConfig.backend_service_url+'/dataset/source/upload',
       uploadHeader: {Authorization: 'Bearer '+cookies.get('access_token'),}
     }
   },
@@ -100,7 +100,7 @@ export default {
   methods: {
     import_dataset(datatype){
       if (datatype=='dataset'){
-        // this.$refs['targetDatasetUploadRef'].$refs['invoker'].handleClick()
+        // this.$refs['sourceDatasetUploadRef'].$refs['invoker'].handleClick()
         // hack el-upload，触发文件选择器的 元素在 el-upload 外面。
         this.$refs['inner-upload'].click()
       }
@@ -120,7 +120,7 @@ export default {
         title: '成功',
         message: '上传成功',});
       this.$refs['dropdown_import'].handleClose();
-      this.targetDatasetUploadRef.clearFiles()
+      this.sourceDatasetUploadRef.clearFiles()
       this.getDatasetList(this.currentPage)
     },
     handleUploadError(err: Error, uploadFile: UploadFile, uploadFiles: UploadFiles) {
@@ -136,15 +136,15 @@ export default {
       console.log(uploadFiles)
       const file = files[0] as UploadRawFile
       file.uid = genFileId()
-      this.targetDatasetUploadRef.handleStart(file)
-      this.targetDatasetUploadRef.submit()
+      this.sourceDatasetUploadRef.handleStart(file)
+      this.sourceDatasetUploadRef.submit()
     },
     handleCurrentChange (currentPage) {
       this.getDatasetList(this.currentPage);
     },
     getDatasetList (currentPage, q='') {
       let params = {ipp: this.ipp, limit: this.ipp, offset: (currentPage-1)*this.ipp};
-      requests.GetDatasetList(params, this).then(res => {
+      requests.GetSourceDatasetList(params, this).then(res => {
         this.maxPage = res.data.maxPage;
         this.datasets = res.data.datasets;
         // console.log(this.datasets);

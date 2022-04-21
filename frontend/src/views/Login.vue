@@ -80,6 +80,7 @@ export default {
         let data = res.data;
         this.$cookies.set('access_token', data.access_token, globalConfig.cookieExpire);
         this.$cookies.set('username', data.username, globalConfig.cookieExpire);
+        this.$cookies.set('is_admin', data.is_admin, globalConfig.cookieExpire);
         this.$router.push('/index');
       });
     }

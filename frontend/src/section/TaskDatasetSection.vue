@@ -1,16 +1,29 @@
 
 <template>
-  DatasetSection {{task_prop.name}}
-  <div>
-    <el-select v-model="value" class="m-2" placeholder="Select" size="large">
-      <el-option
-        v-for="dataset in target_selections"
-        :key="dataset.id"
-        :label="dataset.title"
-        :value="dataset.id"
-      />
-    </el-select>
-  </div>
+  <el-col :span="16" :offset="1">
+    <el-form label-position="top">
+      <el-form-item label="目标域数据集">
+        <el-select v-model="target_id" class="m-2" placeholder="选择数据集" size="large">
+          <el-option
+            v-for="dataset in target_selections"
+            :key="dataset.id"
+            :label="dataset.title"
+            :value="dataset.id"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="源域数据集">
+        <el-select v-model="source_id" class="m-2" placeholder="选择数据集" size="large">
+          <el-option
+            v-for="dataset in source_selections"
+            :key="dataset.id"
+            :label="dataset.title"
+            :value="dataset.id"
+          />
+        </el-select>
+      </el-form-item>
+    </el-form>
+  </el-col>
 </template>
 
 <script lang="ts">
@@ -20,7 +33,9 @@ export default {
   data(){
     return {
       target_selections: [],
-      value: this.task_prop.source_name
+      source_selections: [],
+      target_id: null,
+      source_id: null
     }
   },
   methods:{
@@ -30,10 +45,15 @@ export default {
     requests.GetTargetSelection({}, this).then(res => {
       this.target_selections = res.data.selections
     })
+
+    requests.GetSourceSelection({}, this).then(res => {
+      this.source_selections = res.data.selections
+    })
   }
 }
 </script>
-
 <style>
-
+.form-container{
+  text-align: left;
+}
 </style>

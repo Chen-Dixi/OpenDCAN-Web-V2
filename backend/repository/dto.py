@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from distutils.command.config import config
 from typing import Optional, Any, List
@@ -40,6 +41,7 @@ class Token(BaseModel):
     access_token: str
     username: str
     token_type: str
+    is_admin: bool
 
 class TokenData(BaseModel):
     username: Optional[str] = None
@@ -56,6 +58,7 @@ class PydanticTargetDatasetGetter(GetterDict):
             return True if val == 1 else False
         else:
             return getattr(self._obj, key, default)
+
 class TargetDatasetRecordDto(BaseModel):
     id : int
     title : Optional[str]
@@ -71,7 +74,45 @@ class TargetDatasetRecordDto(BaseModel):
         orm_mode = True
         getter_dict = PydanticTargetDatasetGetter
 
+class PydanticSourceDatasetGetter(GetterDict):
+    custom_keys = ['is_active']
+
+    def get(self, key: str, default: Any) -> Any:
+        if key == 'is_active':
+            val = getattr(self._obj, key)
+            return True if val == 1 else False
+        elif key == 'labels':
+            val = getattr(self._obj, key)
+            if val is None:
+                return []
+            return json.loads(val)
+        else:
+            return getattr(self._obj, key, default)
+
+class SourceDatasetRecordDto(BaseModel):
+    id : int
+    title : Optional[str]
+    description : Optional[str]
+    file_path : Optional[str]
+    labels: List[str]
+    label_num: int
+    create_name : str
+    update_name : str
+    is_active : bool
+    state : int
+    
+    class Config:
+        orm_mode = True
+        getter_dict = PydanticSourceDatasetGetter
+
 class TargetDatasetRecordSelection(BaseModel):
+    id: int
+    title: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+class SourceDatasetRecordSelection(BaseModel):
     id: int
     title: Optional[str]
 
@@ -84,6 +125,11 @@ class CreateTargetDatasetRecord(BaseModel):
     username : str
     create_name : str
 
+class CreateSourceDatasetRecordDto(BaseModel):
+    title: str
+    file_path : str
+    create_name : str
+
 class QueryTargetDatasetDto(BaseModel):
     limit: int
     offset: int
@@ -94,8 +140,15 @@ class QueryTargetDatasetResponse(BaseModel):
     datasets: Optional[List[TargetDatasetRecordDto]]
     maxPage: int
 
+class QuerySourceDatasetResponse(BaseModel):
+    datasets: Optional[List[SourceDatasetRecordDto]]
+    maxPage: int
+
 class QueryTargetDatasetSelectionResponse(BaseModel):
     selections: List[TargetDatasetRecordSelection]
+
+class QuerySourceDatasetSelectionResponse(BaseModel):
+    selections: List[SourceDatasetRecordSelection]
 
 class PydanticTaskRecordGetter(GetterDict):
     date_keys = ['create_time', 'update_time']

@@ -61,8 +61,16 @@ const axiosDatasetList = (data, _this) => {
   return request('/dataset/target/list', data, 'get', _this, true, true)
 }
 
+const axiosSourceDatasetList = (data, _this) => {
+  return request('/dataset/source/list', data, 'get', _this, true, true)
+}
+
 const axiosTargetSelectionList = (data, _this) => {
   return request('/dataset/target/list_selection', data, 'get', _this)
+}
+
+const axiosSourceSelectionList = (data, _this) => {
+  return request('/dataset/source/list_selection', data, 'get', _this)
 }
 
 const axiosGetTaskList = (data, _this) => {
@@ -77,8 +85,10 @@ let requests = {
     Login: axiosLogin,
     Register: axiosRegister,
     GetDatasetList: axiosDatasetList,
+    GetSourceDatasetList: axiosSourceDatasetList,
     GetTaskList: axiosGetTaskList,
     GetTargetSelection: axiosTargetSelectionList,
+    GetSourceSelection: axiosSourceSelectionList,
     GetTask: axiosGetTask,
 };
 

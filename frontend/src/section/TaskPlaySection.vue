@@ -5,6 +5,10 @@ import { ElMessage } from 'element-plus'
 import {genFileId} from 'element-plus'
 import type { UploadProps, UploadInstance, UploadUserFile, UploadRawFile } from 'element-plus'
 
+const props = defineProps({
+  task_prop: Object,
+});
+
 const activeTab = ref('first')
 const imageUrl = ref('')
 const predict = ref('Unknown')

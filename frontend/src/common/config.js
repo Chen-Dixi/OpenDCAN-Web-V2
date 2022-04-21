@@ -4,8 +4,12 @@ let globalConfig = {
     backend_service_url: 'http://localhost:8000',
     allowedImageType: ['image/png', 'image/jpeg'],
     bgRouter: [
-      '/login', '/register', '/datasets',
-      '/forgetPassword', '/tasks', '/index'
+      '/login', '/register',
+      '/forgetPassword', '/index'
+    ],
+    needLoginUrl: [
+      '/datasets', '/tasks',
+      '/task/:taskId', '/dataset/:datasetId'
     ],
     depositThreshold: 2000,
   };
