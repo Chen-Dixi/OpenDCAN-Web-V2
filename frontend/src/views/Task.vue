@@ -64,6 +64,17 @@ export default {
   methods:{
     didSelect(index){
       this.$router.replace(index)
+    },
+    getTask() {
+      requests.GetTask(this.$route.params.taskId, {}, this).then(res => {
+    // this.articleForm = res.data.article;
+    // this.contentTemp = this.articleForm.content;
+    // if (this.articleForm.bannerUrl) {
+    //   this.uploadImageName = 'banner.jpg';
+    //   this.uploadImages = [{ name: this.uploadImageName, url: this.articleForm.bannerUrl }];
+    // }
+      this.task = res.data
+    });
     }
   },
   computed:{
@@ -73,15 +84,7 @@ export default {
     }
   },
   created() {
-    requests.GetTask(this.$route.params.taskId, {}, this).then(res => {
-    // this.articleForm = res.data.article;
-    // this.contentTemp = this.articleForm.content;
-    // if (this.articleForm.bannerUrl) {
-    //   this.uploadImageName = 'banner.jpg';
-    //   this.uploadImages = [{ name: this.uploadImageName, url: this.articleForm.bannerUrl }];
-    // }
-      this.task = res.data
-    });
+    this.getTask()
   },
   beforeRouteUpdate (to, from){
     

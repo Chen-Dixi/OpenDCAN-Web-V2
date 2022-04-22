@@ -150,6 +150,7 @@ class QueryTargetDatasetSelectionResponse(BaseModel):
 class QuerySourceDatasetSelectionResponse(BaseModel):
     selections: List[SourceDatasetRecordSelection]
 
+# ========================== task Record
 class PydanticTaskRecordGetter(GetterDict):
     date_keys = ['create_time', 'update_time']
 
@@ -188,3 +189,10 @@ class QueryTaskRecordResponse(BaseModel):
 
 class CreateTaskDto(BaseModel):
     task_name: str
+
+class UpdateTaskDatasetConfigDto(BaseModel):
+    task_id: int
+    source_id: int
+    source_name: str
+    target_id: int
+    target_name: str

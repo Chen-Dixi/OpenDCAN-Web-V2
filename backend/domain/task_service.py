@@ -24,3 +24,15 @@ async def get_task_detail(taskId: int, username: str, db: Session) -> dto.TaskRe
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Unauthorized access to data")
     
     return dto.TaskRecordDto.from_orm(db_task)
+
+async def update_task_dataset(task_id: int,
+    source_id: int,
+    source_name: str,
+    target_id: int,
+    target_name: str,
+    db: Session):
+
+    crud.update_task_record_by_id(
+        task_id=task_id, 
+        toUpdate={"source_id": source_id, "source_name": source_name, "target_id": target_id, "target_name": target_name},
+        db=db)

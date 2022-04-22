@@ -7,7 +7,6 @@ export const useUserStore = defineStore('user', {
         return {
             // initial state
             isAdmin: false,
-            username: '羲'
         }
     },
     getters: {

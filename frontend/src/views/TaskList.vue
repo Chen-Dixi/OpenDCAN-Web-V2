@@ -110,6 +110,7 @@ export default {
       })
     },
     handleEdit(row) {
+      // 任务详情界面
       this.$router.push('/task/'+row.id)
     }
   },

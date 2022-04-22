@@ -29,7 +29,7 @@
               <div ref="inner-upload"></div>
             </el-upload>
           </div>
-          <dataset-cell v-for="dataset in datasets" :dataset="dataset" :key="dataset.id"/>
+          <dataset-cell v-for="dataset in datasets" :dataset="dataset" link_prefix="/dataset/target/" :key="dataset.id"/>
           <el-pagination
             @current-change="handleCurrentChange"
             :current-page="currentPage"
@@ -150,6 +150,9 @@ export default {
         // console.log(this.datasets);
       })
     },
+    selectDatasetDetail (id){
+      this.$router.push('/dataset/target/'+id)
+    }
   },
   created() {
     this.getDatasetList(this.currentPage);

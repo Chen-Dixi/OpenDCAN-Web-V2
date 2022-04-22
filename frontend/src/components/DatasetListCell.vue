@@ -1,12 +1,13 @@
 <script setup>
 const props = defineProps({
-    dataset: Object
+    dataset: Object,
+    link_prefix: String
 })
 
 </script>
 <template>
     <div class="dataset-wide-cell">
-        <a href="/datasets">
+        <a :href="link_prefix+dataset.id">
             <div class="dataset-row">
                 <div class="col-sm-2 row-item-image">
                     <!-- item image TBD: background-image css -->

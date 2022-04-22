@@ -74,11 +74,15 @@ const axiosSourceSelectionList = (data, _this) => {
 }
 
 const axiosGetTaskList = (data, _this) => {
-  return request('/task/list', data, 'get', _this)
+  return request('/task/list', data, 'get', _this);
 }
 
 const axiosGetTask = (taskId, params, _this) => {
   return request('/task/detail/' + taskId, params, 'get', _this);
+}
+
+const axiosUpdateTaskDatasetConfig = (data, _this) => {
+  return request('/task/update/dataset', data, 'post', _this);
 }
 
 let requests = {
@@ -90,6 +94,7 @@ let requests = {
     GetTargetSelection: axiosTargetSelectionList,
     GetSourceSelection: axiosSourceSelectionList,
     GetTask: axiosGetTask,
+    UpdateTaskDatasetConfig: axiosUpdateTaskDatasetConfig,
 };
 
 export default requests;

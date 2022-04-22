@@ -177,3 +177,8 @@ def create_task_record(db: Session, task_name: str, username: str):
     # 写入后的结果返回给 对象，里面会包含主键id
     db.refresh(db_task)
     return db_task
+
+def update_task_record_by_id(task_id, toUpdate: object, db: Session):
+    count = db.query(entity.TaskRecord).filter(entity.TaskRecord.id == task_id).update(toUpdate)
+    db.commit()
+    return count
