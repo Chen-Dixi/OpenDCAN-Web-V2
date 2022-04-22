@@ -58,7 +58,6 @@ async def uplaod_source_dataset(file: UploadFile, background_tasks: BackgroundTa
     
     source_dto = await dataset_service.upload_source_dataset(file, user, db)
     # 解压任务放在 后台任务中去执行
-    print("BP 2")
     background_tasks.add_task(unzip_the_source_dataset, source_dto.id, source_dto.file_path, db)
 
     return {"filename": source_dto.title}

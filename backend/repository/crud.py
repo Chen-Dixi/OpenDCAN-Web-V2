@@ -82,8 +82,8 @@ def create_source_dataset_record(db: Session, create_dto: dto.CreateSourceDatase
     db.refresh(db_source_dataset)
     return db_source_dataset
 
-def update_target_dataset(file_path, folder_path, db: Session):
-    record = db.query(entity.TargetDatasetRecord).filter(entity.TargetDatasetRecord.file_path == file_path).update({'state':1,'file_path':folder_path})
+def update_target_dataset(file_path, toUpdate: object, db: Session):
+    record = db.query(entity.TargetDatasetRecord).filter(entity.TargetDatasetRecord.file_path == file_path).update(toUpdate)
     db.commit()
 
 def update_source_dataset(dataset_id, toUpdate: object, db: Session):

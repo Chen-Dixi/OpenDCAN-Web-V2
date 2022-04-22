@@ -5,8 +5,10 @@ const Overview = () => import('../components/Overview.vue')
 const Login = () => import('../views/Login.vue')
 const Register = () => import('../views/Register.vue')
 const TaskList = () => import('../views/TaskList.vue')
-const Datasets = () => import('../views/Datasets.vue')
+const TargetDatasets = () => import('../views/Datasets.vue')
 const SourceDatasets = () => import('../views/SourceDatasets.vue')
+const TargetDatasetDetail = () => import('../views/TargetDatasetDetail.vue')
+const SourceDatasetDetail = () => import('../views/SourceDatasetDetail.vue')
 const TaskView = () => import('../views/Task.vue')
 const TaskDatasetSection = () => import('../section/TaskDatasetSection.vue')
 const TaskPlaySection = () => import('../section/TaskPlaySection.vue')
@@ -17,7 +19,8 @@ const routes = [
     {
         path: '/',
         redirect: '/index'
-    },{
+    },
+    {
         path: '/',
         name: 'Home',
         component: Home,
@@ -31,13 +34,14 @@ const routes = [
                 component: TaskList
             },{
                 path: 'datasets',
-                component: Datasets
+                component: TargetDatasets
             },{
                 path: 'source_datasets',
                 component: SourceDatasets
             }
         ]
-    },{
+    },
+    {
         path: '/task/:taskId',
         component: TaskView,
         children: [
@@ -58,6 +62,14 @@ const routes = [
                 redirect: {name: 'task-dataset-section'}
             }
         ]
+    },
+    {
+        path: '/dataset/target/:datasetId',
+        component: TargetDatasetDetail
+    },
+    {
+        path: '/dataset/source/:datasetId',
+        component: SourceDatasetDetail
     },
     {
         path: '/login',
