@@ -1,32 +1,43 @@
 
 <template>
-  <el-col :span="16" :offset="1">
-    <el-form label-position="top" size="large">
-      <el-form-item label="目标域数据集">
-        <el-select v-model="task_prop.target_id" class="m-2" placeholder="选择数据集">
-          <el-option
-            v-for="dataset in target_selections"
-            :key="dataset.id"
-            :label="dataset.title"
-            :value="dataset.id"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="源域数据集">
-        <el-select v-model="task_prop.source_id" class="m-2" placeholder="选择数据集">
-          <el-option
-            v-for="dataset in source_selections"
-            :key="dataset.id"
-            :label="dataset.title"
-            :value="dataset.id"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">保存</el-button>
-      </el-form-item>
-    </el-form>
-  </el-col>
+  <el-form label-position="top" size="large">
+    <el-row :gutter="20">
+      <el-col :span="12">
+        <el-form-item label="源域数据集">
+          <el-select v-model="task_prop.source_id" class="m-2" placeholder="选择数据集" @change="selectSourceChange">
+            <el-option
+              v-for="dataset in source_selections"
+              :key="dataset.id"
+              :label="dataset.title"
+              :value="dataset.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="源域标签">
+          <el-table :data="source_labels" styel="width: 100%" class="table-container">
+              <el-table-column type="index" :index="(index) => index" width="50" label="id" />
+              <el-table-column prop="name" label="标签名称" width="180px"/>
+          </el-table>
+        </el-form-item>
+        
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="目标域数据集">
+          <el-select v-model="task_prop.target_id" class="m-2" placeholder="选择数据集">
+            <el-option
+              v-for="dataset in target_selections"
+              :key="dataset.id"
+              :label="dataset.title"
+              :value="dataset.id"
+            />
+          </el-select>
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <el-form-item>
+      <el-button type="primary" @click="onSubmit">保存</el-button>
+    </el-form-item>
+  </el-form>
 </template>
 
 <script lang="ts">
@@ -42,9 +53,12 @@ export default {
       target_selections: [],
       source_selections: [],
       target_id: null,
-      source_id: null,
+      source_id: this.task_prop.source_id,
       target_idx2name: {},
       source_idx2name: {},
+      source_idx2labels: {},
+      source_labels: [],
+      task: {},
     }
   },
   methods:{
@@ -58,11 +72,16 @@ export default {
       })
 
       requests.GetSourceSelection({}, this).then(res => {
+        this.source_idx2name = {}
+        this.source_idx2labels = {}
         this.source_selections = res.data.selections
         for(let i =0; i<this.source_selections.length; i++){
           let item = this.source_selections[i]
           this.source_idx2name[item.id] = item.title
+          this.source_idx2labels[item.id] = item.labels
         }
+
+        this.source_labels = this.source_idx2labels[this.task_prop.source_id]
       })
     },
     onSubmit(){
@@ -85,15 +104,19 @@ export default {
         title: '成功',
         message: '更新成功',});
       })
+    },
+    selectSourceChange(val) {
+      this.source_labels = this.source_idx2labels[val]
     }
+    
   },
   created() {
     this.getSelection()
   },
 }
 </script>
-<style>
-.form-container{
+<style scoped>
+.table-container {
   text-align: left;
 }
 </style>

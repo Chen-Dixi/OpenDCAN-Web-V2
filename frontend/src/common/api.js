@@ -85,6 +85,9 @@ const axiosUpdateTaskDatasetConfig = (data, _this) => {
   return request('/task/update/dataset', data, 'post', _this);
 }
 
+const axiosGetTaskModelList = (taskId, params, _this) => {
+  return request('/task/train/' + taskId, params, 'get', _this);
+}
 let requests = {
     Login: axiosLogin,
     Register: axiosRegister,
@@ -95,6 +98,7 @@ let requests = {
     GetSourceSelection: axiosSourceSelectionList,
     GetTask: axiosGetTask,
     UpdateTaskDatasetConfig: axiosUpdateTaskDatasetConfig,
+    GetTaskTrainingModel: axiosGetTaskModelList,
 };
 
 export default requests;

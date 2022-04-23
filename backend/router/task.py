@@ -1,4 +1,6 @@
+from concurrent.futures import thread
 import re
+from time import sleep
 from typing import List
 from os import path
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, BackgroundTasks
@@ -47,3 +49,10 @@ async def update_dataset_config(requestDto: dto.UpdateTaskDatasetConfigDto, user
 async def get_task(taskId: int, user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
     task_dto = await task_service.get_task_detail(taskId, user.username, db)
     return task_dto
+
+@router.get("/train/{taskId}", response_model=dto.QueryTaskTrainResponse)
+async def get_task_train(taskId: int, user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    # check if task belongs to current user.
+    _ = await task_service.get_task_detail(taskId, user.username, db)
+    trainings = await task_service.get_task_model_records(task_id=taskId, db=db)
+    return {"trainings": trainings, "maxPage": 1}

@@ -20,6 +20,7 @@
                 <el-table-column prop="source_name" label="源域数据集" width="220px"/>
                 <el-table-column prop="target_name" label="目标域数据集" width="220"/>
                 <el-table-column prop="create_time" label="创建日期"/>
+                <el-table-column prop="update_time" label="编辑日期"/>
                 <el-table-column prop="state" label="任务状态"/> <!-- TBD自定义 -->
                 <el-table-column label="操作">
                   <template #default="scope">

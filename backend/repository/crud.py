@@ -120,9 +120,9 @@ def get_source_dataset_records_count(db: Session, offset:int = 0, limit = RECORD
     return records, count
     
 
-def get_source_dataset_records(db: Session) -> list:
+def get_source_dataset_ready_records(db: Session) -> list:
     return db.query(entity.SourceDatasetRecord) \
-             .filter(entity.SourceDatasetRecord.is_active == 1).all()
+             .filter(entity.SourceDatasetRecord.is_active == 1, entity.SourceDatasetRecord.state == 1).all()
 
 def get_task_records_by_username(
     db: Session,
@@ -167,7 +167,7 @@ def create_task_record(db: Session, task_name: str, username: str):
     db_task.create_time = now_time
     db_task.update_time = now_time
     db_task.is_active = 1
-    db_task.state = 2
+    db_task.state = 1
     db_task.create_name = username
     db_task.update_name = username
 
@@ -182,3 +182,10 @@ def update_task_record_by_id(task_id, toUpdate: object, db: Session):
     count = db.query(entity.TaskRecord).filter(entity.TaskRecord.id == task_id).update(toUpdate)
     db.commit()
     return count
+
+def get_model_records_by_taskId(task_id, db: Session):
+    records = db.query(entity.ModelRecord).filter(entity.ModelRecord.task_id == task_id, entity.ModelRecord.is_active == 1) \
+                .order_by(entity.ModelRecord.update_time.desc()) \
+                .all()
+    return records
+    

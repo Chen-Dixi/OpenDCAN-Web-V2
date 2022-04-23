@@ -31,7 +31,7 @@ const userStore = useUserStore()
         <el-link class="nav-link"
             v-if="this.$cookies.isKey('access_token') && this.$cookies.get('is_admin')=='true'" 
             :class="datasetsSelectedClassObject" 
-            href="/source_datasets">数据集</el-link>
+            href="/source_datasets">管理员</el-link>
         <el-link class="nav-link" :class="tasksSelectedClassObject" href="/tasks">任务</el-link>
     </nav>
     <div class="header-right">

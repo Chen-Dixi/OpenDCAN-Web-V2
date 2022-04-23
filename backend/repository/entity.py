@@ -122,10 +122,10 @@ class ModelRecord(Base):
     __tablename__ = "model_record"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(VARCHAR)
+    username = Column(VARCHAR)
     task_id = Column(Integer, index=True)
     file_path = Column(VARCHAR)
-    model_type = Column(VARCHAR)
+    model_type = Column(Integer)
     state = Column(Integer, default=2)  # 1 ready, 2 training
     source_id = Column(Integer)
     source_name = Column(VARCHAR)

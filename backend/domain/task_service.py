@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
 
@@ -32,7 +33,15 @@ async def update_task_dataset(task_id: int,
     target_name: str,
     db: Session):
 
+    now_time = datetime.now(timezone.utc)
+    now_time = int(datetime.timestamp(now_time)*1000)
+
     crud.update_task_record_by_id(
         task_id=task_id, 
-        toUpdate={"source_id": source_id, "source_name": source_name, "target_id": target_id, "target_name": target_name},
+        toUpdate={"source_id": source_id, "source_name": source_name, "target_id": target_id, "target_name": target_name, "update_time": now_time},
         db=db)
+
+async def get_task_model_records(
+    task_id: int,
+    db: Session):
+    return crud.get_model_records_by_taskId(task_id, db)

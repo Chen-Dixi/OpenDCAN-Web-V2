@@ -103,5 +103,5 @@ async def get_source_records(limit: int,
     return {"datasets": result[0], "maxPage": (result[1]-1)//ipp + 1 }
 
 async def get_source_selection(username: str, db: Session):
-    result = crud.get_source_dataset_records(db)
+    result = crud.get_source_dataset_ready_records(db)
     return result

@@ -35,7 +35,7 @@ import {Edit} from '@element-plus/icons-vue'
         <el-main class="main-container">
             <router-view v-slot="{ Component }">
                 <keep-alive>
-                    <component :is="Component" :task_prop="task"/>
+                    <component :is="Component" :task_prop='task'/>
                 </keep-alive>
             </router-view>
         </el-main>
