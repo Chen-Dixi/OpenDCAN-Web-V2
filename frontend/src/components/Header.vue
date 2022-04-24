@@ -39,7 +39,7 @@ const userStore = useUserStore()
             <a v-if="!this.$cookies.isKey('access_token')" class="header-button" href="/login">登录</a>
             <el-dropdown v-if="this.$cookies.isKey('access_token')" trigger="click" @command="logout">
                 <span class="el-dropdown-link">
-                {{userStore.username}}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                {{this.$cookies.get('username')}}<el-icon class="el-icon--right"><arrow-down /></el-icon>
                 </span>
                 <template #dropdown>
                 <el-dropdown-menu>

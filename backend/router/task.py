@@ -56,3 +56,16 @@ async def get_task_train(taskId: int, user: entity.User = Depends(get_current_ac
     _ = await task_service.get_task_detail(taskId, user.username, db)
     trainings = await task_service.get_task_model_records(task_id=taskId, db=db)
     return {"trainings": trainings, "maxPage": 1}
+
+@router.post("/train/create")
+async def create_model_training(createDto: dto.CreateTrainingTaskDto,
+                                user: entity.User = Depends(get_current_active_user),
+                                db: Session = Depends(get_db)):
+    """
+    创建异步训练任务
+    """# check if task belongs to current user.
+    _ = await task_service.get_task_detail(createDto.task_id, user.username, db)
+    model_id = await task_service.start_training(createDto, user.username, db)
+
+    return {"model": model_id}
+    

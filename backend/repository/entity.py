@@ -102,7 +102,7 @@ class TaskRecord(Base):
 class ModelRecord(Base):
     """
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(120) DEFAULT NULL COMMENT '模型名称，文件名称',
+  `username` varchar(100) DEFAULT NULL COMMENT '模型名称，文件名称',
   `task_id` int NOT NULL COMMENT '所属task id',
   `file_path` varchar(128) DEFAULT NULL COMMENT '文件在系统中的路径位置, 包含文件名',
   `model_type` tinyint DEFAULT NULL COMMENT '模型类型, 1 PyTorch 2 Tensorflow 暂时用不到',

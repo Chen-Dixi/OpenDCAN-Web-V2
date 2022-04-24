@@ -105,7 +105,7 @@ def get_target_dataset_records_by_username_count(db: Session, username: str, off
 
 def get_target_dataset_records_by_username(db: Session, username: str) -> list:
     return db.query(entity.TargetDatasetRecord) \
-             .filter(entity.TargetDatasetRecord.username == username, entity.TargetDatasetRecord.is_active == 1).all()
+             .filter(entity.TargetDatasetRecord.username == username,entity.TargetDatasetRecord.state == 1, entity.TargetDatasetRecord.is_active == 1).all()
 
 def get_source_dataset_records_count(db: Session, offset:int = 0, limit = RECORD_LIMIT) -> List[entity.SourceDatasetRecord]:
     records = db.query(entity.SourceDatasetRecord) \
@@ -189,3 +189,44 @@ def get_model_records_by_taskId(task_id, db: Session):
                 .all()
     return records
     
+def create_model_record(db: Session, 
+                        task_id: int,
+                        username: str,
+                        source_id: int, source_name: str,
+                        target_id: int, target_name: str):
+    """
+    `id` int NOT NULL AUTO_INCREMENT,
+    `username` varchar(100) DEFAULT NULL COMMENT '模型名称，文件名称',
+    `task_id` int NOT NULL COMMENT '所属task id',
+    `file_path` varchar(128) DEFAULT NULL COMMENT '文件在系统中的路径位置, 包含文件名',
+    `model_type` tinyint DEFAULT NULL COMMENT '模型类型, 1 PyTorch 2 Tensorflow 暂时用不到',
+    `state` tinyint NOT NULL DEFAULT '2' COMMENT '1: READY 2: TRAINING READY状态下才能被选择用于推理标注',
+    `source_id` int DEFAULT NULL COMMENT '源域数据集id',
+    `source_name` varchar(120) DEFAULT NULL COMMENT '源域数据集名称, 冗余字段',
+    `target_id` int DEFAULT NULL COMMENT '目标域数据集id',
+    `target_name` varchar(120) DEFAULT NULL COMMENT '目标域数据集名称, 冗余字段',
+    `create_name` varchar(100) DEFAULT NULL COMMENT '上传数据集的人',
+    `update_name` varchar(100) DEFAULT NULL COMMENT '更新数据集信息的人',
+    `is_active` tinyint NOT NULL DEFAULT '0' COMMENT '1 active; 2 deleted',
+    `create_time` bigint DEFAULT NULL,
+    `update_time` bigint DEFAULT NULL,
+    CONSTRAINT `pk_id` PRIMARY KEY (`id`),
+    KEY `model_record_idx_task_id` (`task_id`) USING BTREE
+    """
+    db_model_record = entity.ModelRecord(task_id=task_id, username=username,
+                                         source_id=source_id, source_name=source_name,
+                                         target_id=target_id, target_name=target_name)
+    
+    now_time = datetime.now(timezone.utc)
+    now_time = int(datetime.timestamp(now_time)*1000)
+    
+    db_model_record.create_time = now_time
+    db_model_record.update_time = now_time
+    db_model_record.state = 2 # traning
+    db_model_record.is_active = 1 # active
+    db_model_record.create_name = username
+    db_model_record.update_name = username
+    db.add(db_model_record)
+    db.commit()
+    db.refresh(db_model_record)
+    return db_model_record

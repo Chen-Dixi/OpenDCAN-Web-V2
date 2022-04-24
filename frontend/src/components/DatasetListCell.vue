@@ -46,7 +46,6 @@ const props = defineProps({
     height: 60px;
     width: 100%;
     padding: 0 5px;
-    /* TBD image ratio */
 }
 .dataset-row .row-item-title-detail {
     padding: 0 15px;

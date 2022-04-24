@@ -45,3 +45,16 @@ async def get_task_model_records(
     task_id: int,
     db: Session):
     return crud.get_model_records_by_taskId(task_id, db)
+
+async def start_training(createDto: dto.CreateTrainingTaskDto, username: str, db: Session)->int:
+    db_model_record = crud.create_model_record(db, createDto.task_id, 
+                             username, 
+                             createDto.source_id, createDto.source_name,
+                             createDto.target_id, createDto.target_name)
+    # TBD发送消息，提交一个 训练任务
+    
+    # 更新任务状态，state=2 TRAINING
+    now_time = datetime.now(timezone.utc)
+    now_time = int(datetime.timestamp(now_time)*1000)
+    crud.update_task_record_by_id(createDto.task_id, {"state": 2, "update_time":now_time, "update_name":username}, db)
+    return db_model_record.id

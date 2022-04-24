@@ -1,12 +1,8 @@
 <script lang="ts" setup>
-import {ref} from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 const props = defineProps({
   task_prop: Object
 })
-
-const loading = ref(true)
-
-const dialogVisible = ref(false)
 </script>
 
 <template>
@@ -36,7 +32,7 @@ const dialogVisible = ref(false)
           src="/src/assets/training2.gif" class="loading-image"/>
       </template>
       <template #extra>
-        <el-button type="danger" @click="dialogVisible = true">终止</el-button>
+        <el-button type="danger" @click="terminateConfirm">终止</el-button>
       </template>
     </el-result>
     <el-result
@@ -46,7 +42,7 @@ const dialogVisible = ref(false)
         sub-title="模型训练结束"
       >
       <template #extra>
-        <el-button type="default" @click="dialogVisible = true">重新训练</el-button>
+        <el-button type="default" @click="startConfirm">重新训练</el-button>
       </template>
     </el-result>
     <el-result
@@ -59,7 +55,7 @@ const dialogVisible = ref(false)
           src="/src/assets/training_idel.gif" class="loading-image"/>
       </template>
       <template #extra>
-        <el-button type="success" @click="dialogVisible = true">提交训练</el-button>
+        <el-button type="success" @click="startConfirm">提交训练</el-button>
       </template>
     </el-result>
   </el-card>
@@ -102,10 +98,6 @@ export default {
     }
   },
   methods:{
-    stopTraining(){
-      this.dialogVisible = false
-      console.log("终止训练!")
-    },
     getTrainingModel(){
       requests.GetTaskTrainingModel(this.$route.params.taskId, {}, this).then(res => {
         this.model_records = res.data.trainings
@@ -130,7 +122,43 @@ export default {
         return '正在训练'
       }
       return '错误'
-    }
+    },
+    terminateConfirm( ) {
+      ElMessageBox.confirm(
+        '训练终止后将丢失当前训练结果, 确认终止吗?',
+        '确认终止',
+        {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).then(() => {
+
+      })
+    },
+    startConfirm(){
+      ElMessageBox.confirm(
+      '确认开始此次训练任务?',
+      '确认提交',
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'success',
+      }
+      ).then(() => {
+        let datas = {
+          task_id: this.task_prop.id,
+          source_id: this.task_prop.source_id,
+          source_name: this.task_prop.source_name,
+          target_id: this.task_prop.target_id,
+          target_name: this.task_prop.target_name,
+        }
+        
+        requests.CreateTaskTraining(datas, this).then(res => {
+          this.$router.go()
+        });
+      });
+    },
   },
   created(){
     this.getTrainingModel()

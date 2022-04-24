@@ -26,7 +26,7 @@
                   <template #default="scope">
                     <el-button size="small" @click="handleEdit(scope.row)">查看</el-button>
                   </template>  
-                </el-table-column>> <!-- TBD自定义 -->
+                </el-table-column>
             </el-table>
             <el-pagination
               @current-change="handleCurrentChange"

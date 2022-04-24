@@ -261,3 +261,10 @@ class ModelRecordDto(BaseModel):
 class QueryTaskTrainResponse(BaseModel):
     trainings : List[ModelRecordDto]
     maxPage : int
+
+class CreateTrainingTaskDto(BaseModel):
+    task_id: int
+    source_id: int
+    source_name: str
+    target_id: int
+    target_name: str

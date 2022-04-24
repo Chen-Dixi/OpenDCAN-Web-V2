@@ -103,6 +103,10 @@ export default {
         this.$notify.success({
         title: '成功',
         message: '更新成功',});
+        setTimeout(() => {
+          this.$router.go()
+        }, 1500);
+        
       })
     },
     selectSourceChange(val) {
