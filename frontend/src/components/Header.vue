@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import {useUserStore} from '../pinia/store'
 import {ArrowDown} from '@element-plus/icons-vue'
 const activeChildPage = ref('first')
-// TBD: class and style bind
+
 const handleClick = (tab: string, event: Event) => {
     console.log(tab, event)
 }

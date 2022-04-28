@@ -21,7 +21,14 @@
                 <el-table-column prop="target_name" label="目标域数据集" width="220"/>
                 <el-table-column prop="create_time" label="创建日期"/>
                 <el-table-column prop="update_time" label="编辑日期"/>
-                <el-table-column prop="state" label="任务状态"/> <!-- TBD自定义 -->
+                <el-table-column prop="state" label="任务状态">
+                  <template #default="scope">
+                    <el-tag
+                      :type="stateTagType(scope.row.state)"
+                      >{{ stateTagName(scope.row.state) }}</el-tag
+                    >
+                  </template>  
+                </el-table-column>> <!-- TBD自定义 -->
                 <el-table-column label="操作">
                   <template #default="scope">
                     <el-button size="small" @click="handleEdit(scope.row)">查看</el-button>
@@ -113,7 +120,33 @@ export default {
     handleEdit(row) {
       // 任务详情界面
       this.$router.push('/task/'+row.id)
-    }
+    },
+    stateTagType(state: number){
+      if (state == 1) {
+        // ready
+        return 'info'
+      }
+      if (state == 2) {
+        return ''
+      }
+      if (state == 3) {
+        return 'success'
+      }
+      return 'danger'
+    },
+    stateTagName(state: number){
+      if (state == 1) {
+        // idle
+        return '待训练'
+      }
+      if (state == 2) {
+        return '训练中'
+      }
+      if (state == 3) {
+        return '准备好'
+      }
+      return '错误'
+    },
   },
   created() {
     this.getTaskList(this.currentPage);
@@ -128,6 +161,6 @@ export default {
 }
 .table-wrapper {
     flex: 0 0 auto;
-    width: 75%
+    width: 80%
 }
 </style>
