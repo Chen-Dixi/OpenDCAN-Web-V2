@@ -3,12 +3,14 @@ import re
 from time import sleep
 from typing import List
 from os import path
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, BackgroundTasks, Request
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
+from pika.adapters.blocking_connection import BlockingChannel
 
 from dependencies import get_current_active_user, get_db, pwd_context
 from repository import entity, dto
+from mq.rabbitmq import get_mq_channel
 
 from domain import task_service
 
@@ -59,13 +61,15 @@ async def get_task_train(taskId: int, user: entity.User = Depends(get_current_ac
 
 @router.post("/train/create")
 async def create_model_training(createDto: dto.CreateTrainingTaskDto,
+                                request: Request,
                                 user: entity.User = Depends(get_current_active_user),
-                                db: Session = Depends(get_db)):
+                                db: Session = Depends(get_db)
+                                ):
     """
     创建异步训练任务
     """# check if task belongs to current user.
     _ = await task_service.get_task_detail(createDto.task_id, user.username, db)
-    model_id = await task_service.start_training(createDto, user.username, db)
+    model_id = await task_service.start_training(createDto, user.username, db, request.app.pika_publisher)
 
     return {"model": model_id}
     

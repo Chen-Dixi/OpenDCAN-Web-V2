@@ -1,0 +1,1 @@
+docker run -d --hostname my-rabbit --rm --name rabbitmq-server -p 5672:5672 rabbitmq:3.9.14-alpine

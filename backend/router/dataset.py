@@ -102,18 +102,18 @@ async def get_source_dataset_selection(user: entity.User = Depends(get_current_a
     result = await dataset_service.get_source_selection(user.username, db)
     return {'selections': result}
 
-@router.get("/")
-async def main():
-    content = """
-<body>
-<form action="/files/" enctype="multipart/form-data" method="post">
-<input name="files" type="file" multiple>
-<input type="submit">
-</form>
-<form action="/dataset/target/upload" enctype="multipart/form-data" method="post">
-<input name="files" type="file" multiple>
-<input type="submit">
-</form>
-</body>
-    """
-    return HTMLResponse(content=content)
+# @router.get("/")
+# async def main():
+#     content = """
+# <body>
+# <form action="/api/v1/files/" enctype="multipart/form-data" method="post">
+# <input name="files" type="file" multiple>
+# <input type="submit">
+# </form>
+# <form action="/api/v1/dataset/target/upload" enctype="multipart/form-data" method="post">
+# <input name="files" type="file" multiple>
+# <input type="submit">
+# </form>
+# </body>
+#     """
+#     return HTMLResponse(content=content)

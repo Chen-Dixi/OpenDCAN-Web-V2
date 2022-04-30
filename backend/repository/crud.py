@@ -4,12 +4,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from datetime import datetime, timezone
 
-from passlib.context import CryptContext
-
 from . import entity, dto
 from settings import RECORD_LIMIT, TASK_LIST_IPP
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # 返回的都是 entity model
 def get_user_by_id(db: Session, user_id: int):
