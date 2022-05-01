@@ -108,7 +108,7 @@ export default {
         // ready
         return 'success'
       }
-      if (state == 2) {
+      if (state == 2 || state == 3) {
         return ''
       }
       return 'danger'
@@ -119,9 +119,12 @@ export default {
         return '训练完成'
       }
       if (state == 2) {
+        return '队列中'
+      }
+      if (state == 3) {
         return '正在训练'
       }
-      return '错误'
+      return '已停止'
     },
     terminateConfirm( ) {
       ElMessageBox.confirm(

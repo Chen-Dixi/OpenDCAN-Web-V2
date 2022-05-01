@@ -51,14 +51,27 @@ async def start_training(createDto: dto.CreateTrainingTaskDto, username: str, db
     db_model_record = crud.create_model_record(db, createDto.task_id, 
                              username, 
                              createDto.source_id, createDto.source_name,
-                             createDto.target_id, createDto.target_name)
+                             createDto.target_id, createDto.target_name, auto_commit=False)
     # 更新任务状态，state=2 TRAINING
     now_time = datetime.now(timezone.utc)
     now_time = int(datetime.timestamp(now_time)*1000)
-    crud.update_task_record_by_id(createDto.task_id, {"state": 2, "update_time":now_time, "update_name":username}, db)
+    crud.update_task_record_by_id(createDto.task_id, {"state": 2, "update_time":now_time, "update_name":username}, db, auto_commit=False)
     
+    db_target = crud.get_target_dataset_record_by_id(db = db, recordId = createDto.target_id)
+    db_source = crud.get_source_dataset_record_by_id(db = db, recordId = createDto.source_id)
+
+    if (db_target is None) or (db_source is None) or (db_target.state != 1) or (db_source.state != 1):
+        raise HTTPException(status_code=400, detail="Data not found")
+
     # TBD发送消息，提交一个 训练任务
     # mq_channel.basic_publish(exchange='dl_task', routing_key='train', body='Hello')
-    pika_publisher.send_training_task({'message': 'Hello'})
+    mq_message = {
+        'source_path': db_source.file_path,
+        'target_path': db_target.file_path,
+        'model_id': db_model_record.id,
+        'task_id': createDto.task_id,
+    }
 
+    pika_publisher.send_training_task(mq_message)
+    db.commit()
     return db_model_record.id

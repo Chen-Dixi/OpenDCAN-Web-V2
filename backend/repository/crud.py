@@ -99,9 +99,9 @@ def get_target_dataset_records_by_username_count(db: Session, username: str, off
         return records, count
     return records
 
-def get_target_dataset_records_by_username(db: Session, username: str) -> list:
+def get_target_dataset_ready_records_by_username(db: Session, username: str) -> list:
     return db.query(entity.TargetDatasetRecord) \
-             .filter(entity.TargetDatasetRecord.username == username,entity.TargetDatasetRecord.state == 1, entity.TargetDatasetRecord.is_active == 1).all()
+             .filter(entity.TargetDatasetRecord.username == username, entity.TargetDatasetRecord.state == 1, entity.TargetDatasetRecord.is_active == 1).all()
 
 def get_source_dataset_records_count(db: Session, offset:int = 0, limit = RECORD_LIMIT) -> List[entity.SourceDatasetRecord]:
     records = db.query(entity.SourceDatasetRecord) \
@@ -119,6 +119,18 @@ def get_source_dataset_records_count(db: Session, offset:int = 0, limit = RECORD
 def get_source_dataset_ready_records(db: Session) -> list:
     return db.query(entity.SourceDatasetRecord) \
              .filter(entity.SourceDatasetRecord.is_active == 1, entity.SourceDatasetRecord.state == 1).all()
+
+def get_target_dataset_record_by_id(db: Session, recordId: int):
+    db_target = db.query(entity.TargetDatasetRecord) \
+            .filter(entity.TargetDatasetRecord.id == recordId, entity.TargetDatasetRecord.is_active == 1) \
+            .first()
+    return db_target
+
+def get_source_dataset_record_by_id(db: Session, recordId: int):
+    db_source = db.query(entity.SourceDatasetRecord) \
+            .filter(entity.SourceDatasetRecord.id == recordId, entity.SourceDatasetRecord.is_active == 1) \
+            .first()
+    return db_source
 
 def get_task_records_by_username(
     db: Session,
@@ -174,9 +186,10 @@ def create_task_record(db: Session, task_name: str, username: str):
     db.refresh(db_task)
     return db_task
 
-def update_task_record_by_id(task_id, toUpdate: object, db: Session):
+def update_task_record_by_id(task_id, toUpdate: object, db: Session, auto_commit = True):
     count = db.query(entity.TaskRecord).filter(entity.TaskRecord.id == task_id).update(toUpdate)
-    db.commit()
+    if auto_commit:
+        db.commit()
     return count
 
 def get_model_records_by_taskId(task_id, db: Session):
@@ -189,7 +202,7 @@ def create_model_record(db: Session,
                         task_id: int,
                         username: str,
                         source_id: int, source_name: str,
-                        target_id: int, target_name: str):
+                        target_id: int, target_name: str, auto_commit=False):
     """
     `id` int NOT NULL AUTO_INCREMENT,
     `username` varchar(100) DEFAULT NULL COMMENT '模型名称，文件名称',
@@ -218,11 +231,14 @@ def create_model_record(db: Session,
     
     db_model_record.create_time = now_time
     db_model_record.update_time = now_time
-    db_model_record.state = 2 # traning
+    db_model_record.state = 2 # In Queue
     db_model_record.is_active = 1 # active
     db_model_record.create_name = username
     db_model_record.update_name = username
     db.add(db_model_record)
-    db.commit()
+    if auto_commit:
+        db.commit()
+    else:
+        db.flush()
     db.refresh(db_model_record)
     return db_model_record

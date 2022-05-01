@@ -1,0 +1,17 @@
+train:
+  cuda: 0
+  seed: 19950907
+  checkpoint_file_suffix: '_web_platform.pt'
+  
+  lr: 0.001 # learning rate for generator and classifier
+  likelihood_threshold: 0.5
+  alpha: 0.01
+  test_interval: 2
+  weight_L2norm: 0.05
+  weight_L2norm_lambd: 0.05
+  weight_lgm: 0.5
+  weight_adv: 1.0
+  epochs: 100
+  
+  best_criterion: 'OS'
+  net: 'resnet50'

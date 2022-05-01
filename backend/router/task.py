@@ -1,16 +1,13 @@
-from concurrent.futures import thread
 import re
 from time import sleep
 from typing import List
 from os import path
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, BackgroundTasks, Request
-from fastapi.responses import HTMLResponse
-from sqlalchemy.orm import Session
-from pika.adapters.blocking_connection import BlockingChannel
 
-from dependencies import get_current_active_user, get_db, pwd_context
+from fastapi import APIRouter, Depends, Request
+from sqlalchemy.orm import Session
+
+from dependencies import get_current_active_user, get_db
 from repository import entity, dto
-from mq.rabbitmq import get_mq_channel
 
 from domain import task_service
 

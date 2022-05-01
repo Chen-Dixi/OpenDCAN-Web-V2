@@ -1,6 +1,5 @@
 import pika
-import json
-
+import pickle
 # def get_mq_channel():
 #     connection = pika.BlockingConnection(
 #         pika.ConnectionParameters(host='localhost',port=5672)
@@ -25,16 +24,16 @@ class PikaPublisher(object):
         self.channel.basic_publish(
             exchange='dl_task',
             routing_key='train',
-            body=json.dumps(message))
+            body=pickle.dumps(message))
     
     def send_dataset_label(self, message: dict):
         self.channel.basic_publish(
             exchange='dl_task',
             routing_key='inference_dataset',
-            body=json.dumps(message))
+            body=pickle.dumps(message))
     
     def send_sample_label(self, message: dict):
         self.channel.basic_publish(
             exchange='dl_task',
             routing_key='inference_sample',
-            body=json.dumps(message))
+            body=pickle.dumps(message))

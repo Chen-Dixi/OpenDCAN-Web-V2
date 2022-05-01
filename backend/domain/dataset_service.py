@@ -90,7 +90,7 @@ async def get_target_records(limit: int,
     return {"datasets": result[0], "maxPage": (result[1]-1)//ipp + 1 }
 
 async def get_target_selection(username: str, db: Session):
-    result = crud.get_target_dataset_records_by_username(db, username)
+    result = crud.get_target_dataset_ready_records_by_username(db, username)
     return result
 
 async def get_source_records(limit: int,
