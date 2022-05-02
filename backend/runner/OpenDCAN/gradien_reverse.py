@@ -26,7 +26,14 @@ def identity_scheduler(global_step):
 
 #lambda 在这一层里面计算
 class GradReverseLayer(nn.Module):
-
+    """
+    >>> model = GradReverseLayer()
+        sample = torch.ones([2,1], requires_grad=True)
+        y = model(sample)
+        y = (y*2).sum()
+        y.backward()
+        print(sample.grad)
+    """
 
     def __init__(self, scheduler=identity_scheduler):
         super(GradReverseLayer, self).__init__()

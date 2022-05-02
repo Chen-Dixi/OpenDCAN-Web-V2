@@ -5,7 +5,13 @@ if __name__ == '__main__':
     if pid is 0:
         # 子进程
         env = dict(os.environ)
-        os.execlpe('python', 'python', 'main_train.py', '--source-path', 'data/test1', '--target-path', 'data/test2', env)
+        os.execlpe('python', 'python', 
+        'main_train.py', 
+        # '--source_path', 'data/test1', 
+        # '--target_path', 'data/test2', 
+        '--task_id', '1',
+        '--record_id', '2',
+        env)
         
     else:
         childProcExitInfo = os.wait()

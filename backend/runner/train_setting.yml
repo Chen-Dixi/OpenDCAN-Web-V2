@@ -3,7 +3,9 @@ train:
   seed: 19950907
   checkpoint_file_suffix: '_web_platform.pt'
   
+  batch_size: 32
   lr: 0.001 # learning rate for generator and classifier
+  lr_center: 0.000001
   likelihood_threshold: 0.5
   alpha: 0.01
   test_interval: 2
@@ -12,6 +14,7 @@ train:
   weight_lgm: 0.5
   weight_adv: 1.0
   epochs: 100
-  
+  iters_per_epoch: 1000
+
   best_criterion: 'OS'
   net: 'resnet50'

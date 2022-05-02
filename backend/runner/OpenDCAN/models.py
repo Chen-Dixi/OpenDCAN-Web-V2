@@ -189,10 +189,10 @@ class ResBase(nn.Module):
         self.bn1 = nn.BatchNorm1d(unit_size, affine=True)
         self.linear2 = nn.Linear(unit_size, unit_size)
         self.bn2 = nn.BatchNorm1d(unit_size, affine=True)
-        self.linear3 = nn.Linear(unit_size, unit_size)
-        self.bn3 = nn.BatchNorm1d(unit_size, affine=True)
-        self.linear4 = nn.Linear(unit_size, unit_size)
-        self.bn4 = nn.BatchNorm1d(unit_size, affine=True)
+        # self.linear3 = nn.Linear(unit_size, unit_size)
+        # self.bn3 = nn.BatchNorm1d(unit_size, affine=True)
+        # self.linear4 = nn.Linear(unit_size, unit_size)
+        # self.bn4 = nn.BatchNorm1d(unit_size, affine=True)
         if print_structure:
             print(self)
 

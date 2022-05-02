@@ -14,32 +14,27 @@ def print_config(args):
     print("\n")
 
  
-def post_config(opt):
-    opt.device = torch.device('cuda:%s'%(opt.cuda) if torch.cuda.is_available() else "cpu")
-    if opt.seed is None:
-        opt.seed = random.randint(1, 10000)
+def post_config(train_args, args):
+    train_args.device = torch.device('cuda:%s'%(train_args.cuda) if torch.cuda.is_available() else "cpu")
+    if train_args.seed is None:
+        train_args.seed = random.randint(1, 10000)
     
 
     #random.seed(opt.seed)
-    torch.manual_seed(opt.seed)
-    torch.cuda.manual_seed_all(opt.seed)
-    np.random.seed(opt.seed)
-    if torch.cuda.is_available() and opt.not_cuda:
-        print("WARNING: You have a CUDA device, so you should probably run with --cuda")
+    torch.manual_seed(train_args.seed)
+    torch.cuda.manual_seed_all(train_args.seed)
+    np.random.seed(train_args.seed)
     
-    #输出文件
-    opt.dir2save = generate_dir2save(opt)
-    opt.num_classes = num_classes_of(opt)
-    opt.class_names = class_names(opt)
+    args.dir2save = "../_model/task_%d/" % (args.task_id)
+    os.makedirs(args.dir2save, exist_ok=True)
 
-    return opt
+    return  train_args, args
 
 
-def generate_dir2save(opt):
-    if not opt.openBP:
-        dir2save = "checkpoints/%s/%s/%d" % (opt.dataset, opt.net, opt.build)
-    else:
-        dir2save = "checkpoints/openBP/%s/%s/%d" % (opt.dataset, opt.net, opt.build)
+def generate_dir2save(args):
+    
+    dir2save = "../_model/task_%d/" % (args.task_id)
+    os.makedirs(dir2save, exist_ok=True)
     return dir2save
 
 def generate_dir2output(opt):
@@ -124,6 +119,38 @@ def save_checkpoint( state, is_best, root, filename='checkpoint.pth.tar'):
         shutil.copyfile(filename, best_name)
 
 import logging
+
+def normalize_weight(x):
+    min_val = x.min()
+    max_val = x.max()
+    x = (x - min_val) / (max_val - min_val)
+    x = x / torch.mean(x)
+    return x.detach()
+
+def target_weight(output_t):
+    after_softmax = F.softmax(output_t,dim=1) #这个包含未知类
+    entropy = torch.sum(- after_softmax * torch.log(after_softmax + 1e-10), dim=1) # size = (batch_size, 1)
+    entropy_norm = entropy / np.log(after_softmax.size(1)) #熵越大，置信度越小
+    weight = - entropy_norm
+    weight = weight.detach()
+    return normalize_weight(weight)
+
+"""
+according to the equation in our paper, the value of this loss would only relate to the hyper-parameter \Delta r. 
+As a result, since we use 1.0 for \Delta r, the loss value will actually be 1 and not change through training procedure. 
+Though the loss value will not change, the gradient has been backward to update our model. And that is actually what we want. 
+Please refer to the section 3.5 in our paper for more details.
+"""
+def get_L2norm_loss_self_driven(x, weight_L2norm, keepdim=False):
+    radius = x.norm(p=2, dim=1).detach()
+    assert radius.requires_grad == False
+    radius = radius + 1.0 # 这个delta r是那个
+    if keepdim:
+        l = ((x.norm(p=2, dim=1) - radius) ** 2)
+    else:    
+        l = ((x.norm(p=2, dim=1) - radius) ** 2).mean()
+
+    return weight_L2norm * l
 
 def get_logger(filename, verbosity=1, name=None):
     level_dict = {0: logging.DEBUG, 1: logging.INFO, 2: logging.WARNING}
