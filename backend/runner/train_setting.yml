@@ -14,7 +14,7 @@ train:
   weight_lgm: 0.5
   weight_adv: 1.0
   epochs: 100
-  iters_per_epoch: 1000
+  iters_per_epoch: 100
 
   best_criterion: 'OS'
   net: 'resnet50'

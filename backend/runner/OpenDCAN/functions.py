@@ -32,7 +32,6 @@ def post_config(train_args, args):
 
 
 def generate_dir2save(args):
-    
     dir2save = "../_model/task_%d/" % (args.task_id)
     os.makedirs(dir2save, exist_ok=True)
     return dir2save

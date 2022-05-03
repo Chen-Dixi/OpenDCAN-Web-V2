@@ -90,7 +90,7 @@ class LGMLoss_v0(nn.Module):
 
         y_onehot = torch.FloatTensor(batch_size, self.num_classes) #[batch,10]
         y_onehot.zero_()#置零0
-        y_onehot = y_onehot.to(feat.device) # cuda-lize
+        y_onehot = y_onehot.to(torch.device('cuda:0')) # cuda-lize
         y_onehot.scatter_(1, torch.unsqueeze(label, dim=-1), self.alpha) #在y_onehot的label的位置里面放alpha
         y_onehot = y_onehot + 1.0
         margin_dist = torch.mul(dist, y_onehot) #size = [batch,10]

@@ -1,7 +1,6 @@
-from aifc import Error
 import argparse
 import os
-from asyncio.log import logger
+import traceback
 
 import torch
 import torchvision.transforms as transforms
@@ -62,6 +61,7 @@ def main():
 
     ## 去掉 '__MACOSX' 目录
     source_dataset = DIXIImageFolder(source_path, transform=data_transforms['source'], folder_filter=(lambda x: x not in ['__MACOSX']))
+    print(source_dataset.classes)
     # TBD 目标域数据集
     target_dataset = ImageNoneLabelDataset(target_path, transform=data_transforms['target'])
     
@@ -97,10 +97,13 @@ def main():
     optim_c = SGD(classifier.parameters(), momentum=0.9, lr=train_args.lr,
                           weight_decay=1e-6, nesterov=True)
 
+    print("Start Training....")
     # train_args.epochs 循环
-    for epoch in range(args.epochs):
+    for epoch in range(train_args.epochs):
         train(train_source_iter, train_target_iter, generator, classifier, optim_g, optim_c, src_lgm_loss, epoch, train_args)
 
+        # 保存模型文件
+        print("Save Model to latest.pth.tar")
         _f.save_checkpoint({
             'G_state_dict': generator.state_dict(),
             'C_state_dict': classifier.state_dict(),
@@ -164,5 +167,6 @@ if __name__ == '__main__':
     try:
         main()
         os._exit(0)
-    except Exception:
+    except Exception as e:
+        traceback.print_exc()
         os._exit(1)

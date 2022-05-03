@@ -1,5 +1,7 @@
 import os
 
+from PIL import Image
+
 from torchvision.datasets import VisionDataset
 
 def has_file_allowed_extension(filename, extensions):

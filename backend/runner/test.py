@@ -2,7 +2,7 @@ import os
 
 if __name__ == '__main__':
     pid = os.fork()
-    if pid is 0:
+    if pid == 0:
         # 子进程
         env = dict(os.environ)
         os.execlpe('python', 'python', 
