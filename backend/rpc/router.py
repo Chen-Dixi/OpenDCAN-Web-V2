@@ -4,6 +4,10 @@ from aio_pika.patterns import RPC
 
 from fastapi.logger import logger
 
+from repository.database import SessionLocal
+from repository import crud
+from domain import task_service
+
 __all__ = [
     'consume'
 ]
@@ -39,5 +43,23 @@ async def consume2(loop):
     
     # register method
     await rpc.register('remote_method2', remote_method2, auto_delete=True)
+    print('Established pika async listener')
+    return connection
+
+def model_start_training(*, model_id: int):
+    db = SessionLocal()
+    crud.update_model_record_by_id(db, model_id, {"state": 3}) # update to training
+    db.close()
+    return 0
+
+async def consume(loop):
+    
+    connection = await connect_robust(host='localhost', port=5672, loop=loop)
+    channel = await connection.channel()
+
+    rpc = await RPC.create(channel)
+    
+    # register method
+    await rpc.register('model_start_training', model_start_training, auto_delete=True)
     print('Established pika async listener')
     return connection

@@ -21,6 +21,12 @@ async def test2():
     res = await aio_rpc_client.rpc.proxy.remote_method2(task_id=2, model_id = 5)
     return res
 
+async def training_ack(model_id: int):
+    aio_rpc_client = FastApiRpcClient() # 使用默认配置
+    await aio_rpc_client.initialize()
+    res = await aio_rpc_client.rpc.proxy.model_start_training(model_id = model_id)
+    return res
+
 def training_consumer(ch, method, properties, body):
     """Entrance of rabbitmq message
     body needs to be loaded by pickle
@@ -37,14 +43,10 @@ def training_consumer(ch, method, properties, body):
     target_path = body['target_path']
     model_id = body['model_id']
     task_id = body['task_id']
-    
-    response = asyncio.run(test())
+
+    response = asyncio.run(training_ack(model_id))
 
     print(" [x] Get response:%d" % (response))
-
-    response = asyncio.run(test2())
-
-    print(" [x] Get response2:%d" % (response))
     # pid = os.fork()
     # if pid is 0:
     #     # 子进程
