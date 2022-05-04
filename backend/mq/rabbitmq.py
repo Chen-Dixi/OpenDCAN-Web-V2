@@ -1,4 +1,6 @@
+from matplotlib.pyplot import connect
 import pika
+from aio_pika import connect_robust
 import pickle
 # def get_mq_channel():
 #     connection = pika.BlockingConnection(
@@ -37,3 +39,13 @@ class PikaPublisher(object):
             exchange='dl_task',
             routing_key='inference_sample',
             body=pickle.dumps(message))
+    
+    # 定义 fastapi server 的rpc接口
+    async def rpc_server(self, loop):
+        """Usage: RPC Interface for updating model record's state
+
+        """
+        connection = await connect_robust(host='localhost', port=5672, loop=loop)
+        channel = await connection.channel()
+
+        queue = await channel.declare_queue(name='rpc_server_queue')

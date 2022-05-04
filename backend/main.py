@@ -1,9 +1,14 @@
-from fastapi import FastAPI
+import asyncio
+from aio_pika import connect_robust
+from aio_pika.patterns import RPC
+
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from router import user, dataset, task, base_router
 from settings import allow_cors_origins
 from mq.rabbitmq import PikaPublisher
+from rpc.router import consume, consume2
 # create database table, skip this if there already has one
 # entity.Base.metadata.create_all(bind=engine)
 
@@ -26,3 +31,32 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*']
 )
+
+@app.middleware("http")
+async def rpc_middleware(request: Request, call_next):
+    response = Response("Internal server error", status_code=500)
+    try:
+        # You can also pass a loop as an argument. Keep it here now for simplicity
+        loop = asyncio.get_event_loop()
+        connection = await connect_robust(host='localhost', port=5672, loop=loop)
+        channel = await connection.channel()
+        request.state.rpc = await RPC.create(channel)
+        response = await call_next(request)
+    finally:
+
+        # UPD: just thought that we probably want to keep queue and don't
+        # recreate it for each request so we can remove this line and move
+        # connection, channel and rpc initialisation out from middleware 
+        # and do it once on app start
+
+        # Also based of this: https://github.com/encode/starlette/issues/1029
+        # it's better to create ASGI middleware instead of HTTP
+        await request.state.rpc.close()
+    return response
+
+@app.on_event('startup')
+def startup():
+    loop = asyncio.get_event_loop()
+    # use the same loop to consume
+    asyncio.ensure_future(consume(loop=loop))
+    asyncio.ensure_future(consume2(loop=loop))

@@ -2,8 +2,8 @@ fastapi==0.75.0
 uvicorn==0.17.6
 python-multipart==0.0.5
 opencv-python==4.4.0.42
-python-jose==3.3.0
-passlib==1.7.4
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
 SQLAlchemy==1.4.32
 PyMySQL==1.0.2
 pika==1.2.0

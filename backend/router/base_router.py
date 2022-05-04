@@ -2,11 +2,12 @@ from datetime import datetime, timedelta
 from jose import jwt
 from sqlalchemy.orm import Session
 from typing import Optional
+from aio_pika.patterns import RPC
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from dependencies import oauth2_scheme, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, get_db, pwd_context
+from dependencies import oauth2_scheme, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, get_db, pwd_context, get_rpc
 from repository import crud, dto
 router = APIRouter(tags=["Home"])
 
@@ -57,3 +58,8 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "username": userDto.username, "token_type": "bearer", "is_admin": userDto.is_admin}
+
+@router.get("/rpc")
+async def rpc_test(rpc: RPC = Depends(get_rpc)):
+    response = await rpc.proxy.remote_method(task_id=2, model_id = 5)
+    print("Get RPC Response:{}, Type: {}".format(response, type(response)))

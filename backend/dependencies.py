@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from jose import JWTError, jwt
@@ -16,6 +16,11 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 180
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Dependency to use rpc inside routes functions
+def get_rpc(request: Request):
+    rpc = request.state.rpc
+    return rpc
 
 def get_db():
     db = SessionLocal()
