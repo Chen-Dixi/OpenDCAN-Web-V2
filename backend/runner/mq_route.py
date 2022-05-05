@@ -1,3 +1,5 @@
+import os
+
 import pickle
 import asyncio
 from aio_pika import connect_robust
@@ -27,6 +29,12 @@ async def training_ack(model_id: int):
     res = await aio_rpc_client.rpc.proxy.model_start_training(model_id = model_id)
     return res
 
+async def finish_training_ack(task_id: int, model_id: int, state: int):
+    aio_rpc_client = FastApiRpcClient() # 使用默认配置
+    await aio_rpc_client.initialize()
+    res = await aio_rpc_client.rpc.proxy.model_finish_training(task_id = task_id, model_id = model_id, state = state)
+    return res
+
 def training_consumer(ch, method, properties, body):
     """Entrance of rabbitmq message
     body needs to be loaded by pickle
@@ -47,13 +55,19 @@ def training_consumer(ch, method, properties, body):
     response = asyncio.run(training_ack(model_id))
 
     print(" [x] Get response:%d" % (response))
-    # pid = os.fork()
-    # if pid is 0:
-    #     # 子进程
-    #     env = dict(os.environ)
-    #     os.execlpe('python', 'python', 'main_train.py', '--source-path', source_path, '--target-path', target_path, env)
-        
-    # else:
-    #     childProcExitInfo = os.wait()
-    #     print("Child process exit statu: %d"%(childProcExitInfo[1]))
-    #     print("Child process %d exited"%(childProcExitInfo[0]))
+    
+    pid = os.fork()
+    if pid is 0:
+        # 子进程
+        env = dict(os.environ)
+        os.execlpe('python', 'python', 'main_train.py', '--source-path', source_path, '--target-path', target_path, env)
+        # os.execlpe('python', 'python', 'test.py', env)
+    else:
+        childProcExitInfo = os.wait()
+        # os.waitstatus_to_exitcode(childProcExitInfo[1]) # if python==3.9
+        exit_code = childProcExitInfo[1] >> 8
+        if exit_code == 1:
+            response = asyncio.run(finish_training_ack(task_id, model_id, 4))
+        elif exit_code == 0:
+            response = asyncio.run(finish_training_ack(task_id, model_id, 1))
+        print("Child process exit code: %d"%(exit_code))

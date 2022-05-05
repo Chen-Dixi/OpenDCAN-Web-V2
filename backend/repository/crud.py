@@ -243,7 +243,8 @@ def create_model_record(db: Session,
     db.refresh(db_model_record)
     return db_model_record
 
-def update_model_record_by_id(db: Session, model_id: int, toUpdate: object):
+def update_model_record_by_id(db: Session, model_id: int, toUpdate: object, auto_commit = True):
     count = db.query(entity.ModelRecord).filter(entity.ModelRecord.id == model_id).update(toUpdate)
-    db.commit()
+    if auto_commit:
+        db.commit()
     return count

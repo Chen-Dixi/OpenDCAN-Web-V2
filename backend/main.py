@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from router import user, dataset, task, base_router
 from settings import allow_cors_origins
 from mq.rabbitmq import PikaPublisher
-from rpc.router import consume, consume2
+from rpc.router import rpc_router_start_training, rpc_router_finish_training
 # create database table, skip this if there already has one
 # entity.Base.metadata.create_all(bind=engine)
 
@@ -58,5 +58,5 @@ async def rpc_middleware(request: Request, call_next):
 def startup():
     loop = asyncio.get_event_loop()
     # use the same loop to consume
-    asyncio.ensure_future(consume(loop=loop))
-    asyncio.ensure_future(consume2(loop=loop))
+    asyncio.ensure_future(rpc_router_start_training(loop=loop))
+    asyncio.ensure_future(rpc_router_finish_training(loop=loop))
