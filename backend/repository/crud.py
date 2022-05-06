@@ -1,5 +1,4 @@
 from typing import List
-from matplotlib import offsetbox
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from datetime import datetime, timezone

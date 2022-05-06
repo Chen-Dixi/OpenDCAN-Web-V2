@@ -1,7 +1,8 @@
-from matplotlib.pyplot import connect
 import pika
 from aio_pika import connect_robust
 import pickle
+
+from settings import RABBITMQ_URI
 # def get_mq_channel():
 #     connection = pika.BlockingConnection(
 #         pika.ConnectionParameters(host='localhost',port=5672)
@@ -17,7 +18,7 @@ import pickle
 class PikaPublisher(object):
     def __init__(self):
         self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host='localhost',port=5672)
+            pika.ConnectionParameters(host=RABBITMQ_URI,port=5672)
         )
         self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange='dl_task', exchange_type='direct')
@@ -45,7 +46,7 @@ class PikaPublisher(object):
         """Usage: RPC Interface for updating model record's state
 
         """
-        connection = await connect_robust(host='localhost', port=5672, loop=loop)
+        connection = await connect_robust(host=RABBITMQ_URI, port=5672, loop=loop)
         channel = await connection.channel()
 
         queue = await channel.declare_queue(name='rpc_server_queue')

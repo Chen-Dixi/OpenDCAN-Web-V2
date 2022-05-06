@@ -4,14 +4,13 @@ import ElementPlus from 'element-plus'
 import ContentFilter from './components/ContentFilter.vue'
 import UploadDropdownMenu from './components/UploadDropdownMenu.vue'
 import VueCookies from 'vue3-cookies'
-import { createPinia } from 'pinia'
 import {useCookies} from 'vue3-cookies'
 import 'element-plus/dist/index.css'
 import './assets/css/main.css'
 import router from './router'
 import globalConfig from './common/config'
 
-const pinia = createPinia()
+
 const app = createApp(App)
 const {cookies} = useCookies()
 app
@@ -20,7 +19,6 @@ app
     .use(ElementPlus)
     .use(VueCookies)
     .use(router)
-    .use(pinia)
 
 router.beforeEach((to, from, next) => {
     let isLoggedIn = cookies.isKey('access_token');

@@ -1,8 +1,12 @@
 import pika, sys, os
 from mq_route import training_consumer # rabbitmq 和 训练代码之间的接口函数
+import torch
+
+from settings import RABBITMQ_URI
 
 def main():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost',port=5672))
+    print("Cuda is available: {}".format(torch.cuda.is_available()))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_URI,port=5672))
     channel = connection.channel()
 
     channel.exchange_declare(exchange='dl_task', exchange_type='direct')

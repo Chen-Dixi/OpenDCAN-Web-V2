@@ -9,8 +9,6 @@ from repository import entity, dto, crud
 from common import utils
 from settings import DATASET_UPLOAD_PATH, UPLOAD_DATASET_EXTENSIONS, DIRIGNORE
 
-from torchvision.datasets import DatasetFolder
-
 async def upload_target_dataset(file: UploadFile, user: entity.User, db: Session) -> entity.TargetDatasetRecord:
     """
     目标域数据集上传服务

@@ -1,20 +1,10 @@
 <script lang="ts" setup>
 import {computed, ref} from 'vue'
-import { storeToRefs } from 'pinia'
-import {useUserStore} from '../pinia/store'
 import {ArrowDown} from '@element-plus/icons-vue'
-const activeChildPage = ref('first')
-
-const handleClick = (tab: string, event: Event) => {
-    console.log(tab, event)
-}
 
 const props = defineProps({
     selectedTab: String
 })
-
-const userStore = useUserStore()
-
 </script>
 <template>
     <div class="header-left">
@@ -26,20 +16,20 @@ const userStore = useUserStore()
     <nav class="header-nav">
         <el-link class="nav-link" :class="overviewSelectedClassObject" href="/">首页</el-link>
         <el-link class="nav-link" 
-            v-if="this.$cookies.isKey('access_token') && this.$cookies.get('is_admin')=='false'"
+            v-if="isUser"
             :class="datasetsSelectedClassObject" href="/datasets">数据集</el-link>
         <el-link class="nav-link"
-            v-if="this.$cookies.isKey('access_token') && this.$cookies.get('is_admin')=='true'" 
+            v-if="isAdmin" 
             :class="datasetsSelectedClassObject" 
             href="/source_datasets">管理员</el-link>
         <el-link class="nav-link" :class="tasksSelectedClassObject" href="/tasks">任务</el-link>
     </nav>
     <div class="header-right">
             <el-link class="header-item-right" href="/">关于</el-link>
-            <a v-if="!this.$cookies.isKey('access_token')" class="header-button" href="/login">登录</a>
-            <el-dropdown v-if="this.$cookies.isKey('access_token')" trigger="click" @command="logout">
+            <a v-if="!logined" class="header-button" href="/login">登录</a>
+            <el-dropdown v-if="logined" trigger="click" @command="logout">
                 <span class="el-dropdown-link">
-                {{this.$cookies.get('username')}}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                {{username}}<el-icon class="el-icon--right"><arrow-down /></el-icon>
                 </span>
                 <template #dropdown>
                 <el-dropdown-menu>
@@ -67,7 +57,20 @@ export default {
             return {
                 'nav-link--selected': this.selectedTab == "tasks"
             }
+        },
+        isAdmin() {
+            return this.$cookies.isKey('access_token') && this.$cookies.get('is_admin')=='true'
+        },
+        isUser() {
+            return this.$cookies.isKey('access_token') && this.$cookies.get('is_admin')=='false'
+        },
+        logined() {
+            return this.$cookies.isKey('access_token')
+        },
+        username() {
+            return this.$cookies.get('username')
         }
+
     },
     methods: {
         logout(command) {

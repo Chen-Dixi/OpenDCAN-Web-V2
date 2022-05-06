@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from router import user, dataset, task, base_router
-from settings import allow_cors_origins
+from settings import allow_cors_origins, RABBITMQ_URI
 from mq.rabbitmq import PikaPublisher
 from rpc.router import rpc_router_start_training, rpc_router_finish_training
 # create database table, skip this if there already has one
@@ -38,7 +38,7 @@ async def rpc_middleware(request: Request, call_next):
     try:
         # You can also pass a loop as an argument. Keep it here now for simplicity
         loop = asyncio.get_event_loop()
-        connection = await connect_robust(host='localhost', port=5672, loop=loop)
+        connection = await connect_robust(host=RABBITMQ_URI, port=5672, loop=loop)
         channel = await connection.channel()
         request.state.rpc = await RPC.create(channel)
         response = await call_next(request)

@@ -19,4 +19,4 @@ if __name__ == '__main__':
     #     print("Child process %d exited"%(childProcExitInfo[0]))
     #     print("Parent process %d exiting after child has exited"%(os.getpid()))
 
-    os._exit(1)
+    os._exit(0)

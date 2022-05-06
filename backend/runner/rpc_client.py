@@ -4,8 +4,10 @@ from aio_pika.patterns import RPC
 import pika
 import uuid
 
+from settings import RABBITMQ_URI
+
 class FastApiRpcClient(object):
-    def __init__(self, host: str = "localhost", port: int = 5672):
+    def __init__(self, host: str = RABBITMQ_URI, port: int = 5672):
         self.host = host
         self.port = port
     
@@ -22,7 +24,7 @@ class FastApiRpcClient(object):
 class SynchronousFastApiRpcClient(object):
     def __init__(self):
         self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host='localhost',port=5672))
+            pika.ConnectionParameters(host=RABBITMQ_URI,port=5672))
 
         self.channel = self.connection.channel()
 

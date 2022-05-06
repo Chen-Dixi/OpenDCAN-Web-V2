@@ -59,7 +59,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "username": userDto.username, "token_type": "bearer", "is_admin": userDto.is_admin}
 
-@router.get("/rpc")
-async def rpc_test(rpc: RPC = Depends(get_rpc)):
-    response = await rpc.proxy.remote_method(task_id=2, model_id = 5)
-    print("Get RPC Response:{}, Type: {}".format(response, type(response)))
+# @router.get("/rpc")
+# async def rpc_test(rpc: RPC = Depends(get_rpc)):
+#     response = await rpc.proxy.remote_method(task_id=2, model_id = 5)
+#     print("Get RPC Response:{}, Type: {}".format(response, type(response)))

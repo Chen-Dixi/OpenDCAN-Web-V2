@@ -1,0 +1,43 @@
+version: '2'
+services:
+  opendcan-backend:
+    image: chendixi/fastapi-py38-env:latest
+    container_name: opendcan-backend
+    command: uvicorn main:app --host 0.0.0.0
+    working_dir: /backend
+    depends_on:
+      - rabbitmq
+    volumes:
+      - "/Users/xi-os/Documents/程序员/编程开发/Engineering/OpenDCAN-Web-V2/backend:/backend"
+    environment:
+    - DATABASE_URI=docker.for.mac.localhost
+    - RABBITMQ_URI=rabbitmq
+    ports:
+      - "8000:8000"
+
+  opendcan-runner:
+    image: chendixi/torch190_zsh:latest
+    container_name: opendcan-runner
+    volumes:
+      - "/Users/xi-os/Documents/程序员/编程开发/Engineering/OpenDCAN-Web-V2/backend:/backend"
+    working_dir: /backend/runner
+    command: python training_consumer_main.py
+    environment:
+    - RABBITMQ_URI=rabbitmq
+    depends_on:
+      - rabbitmq
+
+  opendcan-vue:
+    image: chendixi/dcan-vue:latest
+    container_name: opendcan-frontend
+    volumes:
+      - "/Users/xi-os/Documents/程序员/编程开发/Engineering/OpenDCAN-Web-V2/frontend/dist:/app"
+    ports:
+      - "3000:80"
+
+  rabbitmq:
+    image: rabbitmq:3.9.14-alpine
+    container_name: rabbitmq-server
+    hostname: my-rabbitmq
+    ports:
+      - "5672:5672"

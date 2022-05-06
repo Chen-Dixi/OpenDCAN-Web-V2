@@ -57,11 +57,11 @@ def training_consumer(ch, method, properties, body):
     print(" [x] Get response:%d" % (response))
     
     pid = os.fork()
-    if pid is 0:
+    if pid == 0:
         # 子进程
         env = dict(os.environ)
-        os.execlpe('python', 'python', 'main_train.py', '--source-path', source_path, '--target-path', target_path, env)
-        # os.execlpe('python', 'python', 'test.py', env)
+        # os.execlpe('python', 'python', 'main_train.py', '--source-path', source_path, '--target-path', target_path, env)
+        os.execlpe('python', 'python', 'test.py', env)
     else:
         childProcExitInfo = os.wait()
         # os.waitstatus_to_exitcode(childProcExitInfo[1]) # if python==3.9

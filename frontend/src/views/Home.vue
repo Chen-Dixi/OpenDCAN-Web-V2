@@ -1,22 +1,23 @@
-<script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import Header from '../components/Header.vue'
-</script>
 <template>
     <el-container class="home-container">
       <el-header>
-        <Header :selectedTab="selectedTab" />
+        <header-component :selectedTab="selectedTab" />
       </el-header>
       <router-view @didSelectTab="selectTab"/>
     </el-container>
 </template>
-<script>
+<script lang="ts">
+// @ts-ignore
+import Header from '../components/HeaderComponent.vue'
+
 export default {
   data() {
     return {
       selectedTab: ""
     }
+  },
+  components: {
+    HeaderComponent: Header
   },
   methods:{
     selectTab(tabName){
