@@ -1,6 +1,7 @@
 import os
 import shutil
 import json
+from datetime import datetime, timezone
 
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.orm import Session
@@ -117,3 +118,40 @@ async def get_source_single_record(dataset_id: int, db: Session):
     if db_source is None:
         raise HTTPException(status_code=400, detail="Data not found")
     return db_source
+
+async def update_target_basic_information(dataset_id: int, title: str, description: str, username: str, db: Session):
+    db_dataset = crud.get_target_dataset_record_by_id(db, dataset_id)
+    if db_dataset is None:
+        raise HTTPException(status_code=400, detail="Data not found")
+
+    if db_dataset.username != username:
+        raise HTTPException(status_code=401, detail="Unauthorized access to data")
+
+    now_time = datetime.now(timezone.utc)
+    now_time = int(datetime.timestamp(now_time)*1000)
+    toUpdate = {
+        'title': title,
+        'description': description,
+        'update_time': now_time
+    }
+    crud.update_target_dataset(dataset_id, toUpdate, db)
+
+async def update_source_basic_information(dataset_id: int, title: str, description: str, user: entity.User, db: Session):
+    db_dataset = crud.get_source_dataset_record_by_id(db, dataset_id)
+    if db_dataset is None:
+        raise HTTPException(status_code=400, detail="Data not found")
+
+    if user.user_type != 1:
+        raise HTTPException(status_code=401, detail="Unauthorized access to data")
+        
+    now_time = datetime.now(timezone.utc)
+    now_time = int(datetime.timestamp(now_time)*1000)
+    print(title)
+    print(description)
+    
+    toUpdate = {
+        'title': title,
+        'description': description,
+        'update_time': now_time
+    }
+    crud.update_source_dataset(dataset_id, toUpdate, db)

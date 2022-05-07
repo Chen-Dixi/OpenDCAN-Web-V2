@@ -111,3 +111,21 @@ async def get_source_dataset_selection(user: entity.User = Depends(get_current_a
 async def get_source_dataset(dataset_id:int, user:entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
     db_source = await dataset_service.get_source_single_record(dataset_id, db)
     return db_source
+
+@router.post("/target/update")
+async def update_source_dataste(updateDto: dto.UpdateDatasetRecord, user:entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    await dataset_service.update_target_basic_information(updateDto.id,
+                                                    updateDto.title,
+                                                    updateDto.description,
+                                                    user.username,
+                                                    db)
+    return {"dataset_id": updateDto.id}
+
+@router.post("/source/update")
+async def update_source_dataste(updateDto: dto.UpdateDatasetRecord, user:entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    await dataset_service.update_source_basic_information(updateDto.id,
+                                                    updateDto.title,
+                                                    updateDto.description,
+                                                    user,
+                                                    db)
+    return {"dataset_id": updateDto.id}

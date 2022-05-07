@@ -144,6 +144,11 @@ class CreateTargetDatasetRecord(BaseModel):
     username : str
     create_name : str
 
+class UpdateDatasetRecord(BaseModel):
+    id: int
+    title: str
+    description : str
+
 class CreateSourceDatasetRecordDto(BaseModel):
     title: str
     file_path : str
