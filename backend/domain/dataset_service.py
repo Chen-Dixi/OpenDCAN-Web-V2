@@ -91,6 +91,14 @@ async def get_target_selection(username: str, db: Session):
     result = crud.get_target_dataset_ready_records_by_username(db, username)
     return result
 
+async def get_target_single_record(dataset_id: int, username: str, db: Session):
+    db_target = crud.get_target_dataset_record_by_id(db = db, recordId = dataset_id)
+    if db_target is None:
+        raise HTTPException(status_code=400, detail="Data not found")
+    if db_target.username != username:
+        raise HTTPException(status_code=401, detail="Unauthorized access to data")
+    return db_target
+
 async def get_source_records(limit: int,
     offset: int,
     ipp: int,
@@ -103,3 +111,9 @@ async def get_source_records(limit: int,
 async def get_source_selection(username: str, db: Session):
     result = crud.get_source_dataset_ready_records(db)
     return result
+
+async def get_source_single_record(dataset_id: int, db: Session):
+    db_source = crud.get_source_dataset_record_by_id(db = db, recordId = dataset_id)
+    if db_source is None:
+        raise HTTPException(status_code=400, detail="Data not found")
+    return db_source

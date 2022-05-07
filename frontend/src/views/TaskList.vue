@@ -1,6 +1,11 @@
 <template>
     <el-main class="tasks-main-wrapper">
+        
         <div class="table-wrapper">
+            <div style="padding-bottom: 40px">
+              <el-button type="primary" class="float-left" @click="createTaskConfirm">新任务</el-button>
+            </div>
+            
             <el-table :data="tasks" styel="width: 100%">
                 <!--
                 id : int
@@ -48,49 +53,13 @@
     </el-main>
 </template>
 <script lang="ts" setup>
-// const tableData = [
-//   {
-//     date: '2016-05-03',
-//     name: 'Tom',
-//     address: 'No. 189, Grove St, Los Angeles',
-//   },
-//   {
-//     date: '2016-05-02',
-//     name: 'Tom',
-//     address: 'No. 189, Grove St, Los Angeles',
-//   },
-//   {
-//     date: '2016-05-04',
-//     name: 'Tom',
-//     address: 'No. 189, Grove St, Los Angeles',
-//   },
-//   {
-//     date: '2016-05-01',
-//     name: 'Tom',
-//     address: 'No. 189, Grove St, Los Angeles',
-//   },
-//   {
-//     date: '2016-05-08',
-//     name: 'Tom',
-//     address: 'No. 189, Grove St, Los Angeles',
-//   },
-//   {
-//     date: '2016-05-06',
-//     name: 'Tom',
-//     address: 'No. 189, Grove St, Los Angeles',
-//   },
-//   {
-//     date: '2016-05-07',
-//     name: 'Tom',
-//     address: 'No. 189, Grove St, Los Angeles',
-//   },
-// ]
 
 </script>
 <script lang="ts" >
 import {useCookies} from 'vue3-cookies'
 import requests from '../common/api';
 const {cookies} = useCookies()
+import { ElMessageBox } from 'element-plus'
 
 export default {
   data() {
@@ -115,6 +84,21 @@ export default {
         this.maxPage = res.data.maxPage
         this.tasks = res.data.tasks;
         // console.log(this.datasets);
+      })
+    },
+    createTaskConfirm( ) {
+      ElMessageBox.prompt(
+        '请输入新任务的名称',
+        '创建任务',
+        {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
+        }
+      ).then(({value}) => {
+        let data = {task_name: value}
+        requests.CreateTask(data, this).then(res => {
+          this.getTaskList(this.currentPage)
+        })
       })
     },
     handleEdit(row) {

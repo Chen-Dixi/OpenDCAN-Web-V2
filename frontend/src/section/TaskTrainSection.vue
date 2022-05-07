@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 const props = defineProps({
   task_prop: Object
 })

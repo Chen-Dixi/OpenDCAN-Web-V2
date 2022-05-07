@@ -82,6 +82,11 @@ async def get_target_dataset_selection(user: entity.User = Depends(get_current_a
     result = await dataset_service.get_target_selection(user.username, db)
     return {'selections': result}
 
+@router.get("/target/get", response_model=dto.TargetDatasetRecordDto)
+async def get_source_dataset(dataset_id:int, user:entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    db_target = await dataset_service.get_target_single_record(dataset_id, user.username, db)
+    return db_target
+
 @router.get("/source/list", response_model = dto.QuerySourceDatasetResponse)
 async def get_source_dataset_list(limit: int,
     offset: int,
@@ -102,18 +107,7 @@ async def get_source_dataset_selection(user: entity.User = Depends(get_current_a
     result = await dataset_service.get_source_selection(user.username, db)
     return {'selections': result}
 
-# @router.get("/")
-# async def main():
-#     content = """
-# <body>
-# <form action="/api/v1/files/" enctype="multipart/form-data" method="post">
-# <input name="files" type="file" multiple>
-# <input type="submit">
-# </form>
-# <form action="/api/v1/dataset/target/upload" enctype="multipart/form-data" method="post">
-# <input name="files" type="file" multiple>
-# <input type="submit">
-# </form>
-# </body>
-#     """
-#     return HTMLResponse(content=content)
+@router.get("/source/get", response_model=dto.SourceDatasetRecordDto)
+async def get_source_dataset(dataset_id:int, user:entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    db_source = await dataset_service.get_source_single_record(dataset_id, db)
+    return db_source

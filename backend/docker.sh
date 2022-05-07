@@ -1,1 +1,1 @@
-docker run --name dcan-api --rm -p 8000:8000 dcan-backend
+docker run -it --name opendcan-bakcend  --mount type=bind,src=$(pwd),dst=/root/backend/ --rm -p 8000:8000 chendixi/fastapi-py38-env:latest zsh
