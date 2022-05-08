@@ -19,6 +19,7 @@ from dixitool.pytorch.datasets import DIXIImageFolder, ImageNoneLabelDataset, Fo
 
 
 DATASET_BASE_PATH = '../'
+MODEL_BASE_PATH = '../'
 
 def main():
     
@@ -26,8 +27,10 @@ def main():
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--source_path',type=str,default='_data/source_dataset/45a2bef4c2d111ecb8eaacde48001122_amazon_office2',metavar='N',help='source directory')
     parser.add_argument('--target_path',type=str,default='_data/target_dataset/8c733062c24e11ecbe1eacde48001122',metavar='N',help='target directory')
+    parser.add_argument('--checkpoint_dir',type=str,default='_model/task_3/model_3/',metavar='N',help='checkpoint directory')
+    parser.add_argument('--checkpoint_file_name', default='latest.pth.tar', type=str, help='name for checkpoint files') #只给文件名
     parser.add_argument('--task_id', type=int)
-    parser.add_argument('--record_id', type=int)
+    parser.add_argument('--model_id', type=int)
 
     args = parser.parse_args()
     train_args = yaml_config.train
@@ -62,7 +65,7 @@ def main():
     ## 去掉 '__MACOSX' 目录
     source_dataset = DIXIImageFolder(source_path, transform=data_transforms['source'], folder_filter=(lambda x: x not in ['__MACOSX']))
     print(source_dataset.classes)
-    # TBD 目标域数据集
+    # 目标域数据集
     target_dataset = ImageNoneLabelDataset(target_path, transform=data_transforms['target'])
     
     source_dataloader = DataLoader(source_dataset, train_args.batch_size, shuffle=True)
@@ -94,7 +97,7 @@ def main():
                   {'params':generator.bn1.parameters()},{'params':generator.bn2.parameters()}]
 
     optim_g = Adam(params, lr = train_args.lr, weight_decay=1e-6)
-    optim_c = SGD(classifier.parameters(), momentum=0.9, lr=train_args.lr,
+    optim_c = SGD(classifier.parameters(), momentum=train_args.momentum, lr=train_args.lr,
                           weight_decay=1e-6, nesterov=True)
 
     print("Start Training....")
@@ -107,7 +110,7 @@ def main():
         _f.save_checkpoint({
             'G_state_dict': generator.state_dict(),
             'C_state_dict': classifier.state_dict(),
-        }, False, args.dir2save, filename = 'lates.pth.tar')
+        }, os.path.join(MODEL_BASE_PATH, args.checkpoint_dir), filename = args.checkpoint_file_name)
     # exit process
     completeLogger.close()
 

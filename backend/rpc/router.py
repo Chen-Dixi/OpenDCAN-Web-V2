@@ -32,12 +32,15 @@ async def rpc_router_start_training(loop):
     print('Established pika async listener')
     return connection
 
-def model_finish_training(*,task_id: int, model_id: int, state: int):
+def model_finish_training(*,task_id: int, model_id: int, file_path:str, state: int):
     db = SessionLocal()
-    crud.update_model_record_by_id(db, model_id, {"state": state}, auto_commit=False) # update to training
+    toUpdate = {"state": state}
     task_state = 1
-    if state == 1:
-        task_state = 3
+    if state == 1: # model ready
+        task_state = 3 # then task ready
+        toUpdate["file_path"] = file_path
+
+    crud.update_model_record_by_id(db, model_id, toUpdate, auto_commit=False) # update to training
     crud.update_task_record_by_id(task_id, {"state": task_state}, db, auto_commit=False)
     db.commit()
     db.close()

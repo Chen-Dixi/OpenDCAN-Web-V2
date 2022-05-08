@@ -36,7 +36,7 @@
             </el-form>
             <template #footer>
                 <span class="dialog-footer">
-                    <el-button @click="resetForm">Cancel</el-button>
+                    <el-button @click="resetForm">取消</el-button>
                     <el-button type="primary" @click="submitChange"
                     >确定</el-button
                     >
@@ -48,15 +48,8 @@
 
 <script setup lang="ts">
 import { Edit } from '@element-plus/icons-vue'
-import { reactive, ref } from 'vue'
-const editFormVisible = ref(false)
 
 const formLabelWidth = '60px'
-
-const form = reactive({
-  title: '',
-  description: '',
-})
 
 </script>
 <script lang="ts">
@@ -67,6 +60,11 @@ export default {
     data() {
         return {
             target_dataset:{},
+            form: {
+                title: '',
+                description: '',
+            },
+            editFormVisible: false
         }
     },
     components: {
@@ -88,6 +86,7 @@ export default {
         resetForm(){
             this.form.title = this.target_dataset.title
             this.form.description = this.target_dataset.description
+            this.editFormVisible = false
         },
         submitChange(){
             let data = {

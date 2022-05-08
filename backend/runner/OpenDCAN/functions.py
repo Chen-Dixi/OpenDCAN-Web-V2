@@ -25,8 +25,6 @@ def post_config(train_args, args):
     torch.cuda.manual_seed_all(train_args.seed)
     np.random.seed(train_args.seed)
     
-    args.dir2save = "../_model/task_%d/" % (args.task_id)
-    os.makedirs(args.dir2save, exist_ok=True)
 
     return  train_args, args
 
@@ -108,14 +106,11 @@ def load_from_checkpoint(checkpoint_file, *keys):
         results.append(checkpoint[key])
     return results
 
-def save_checkpoint( state, is_best, root, filename='checkpoint.pth.tar'):
+def save_checkpoint( state, root, filename='latest.pth.tar'):
     if not os.path.exists(root):
-        os.makedirs(root)
-    best_name = os.path.join(root, 'best_model_'+filename)
+        os.makedirs(root, exist_ok=True)
     filename = os.path.join(root, filename)
     torch.save(state, filename)
-    if is_best:
-        shutil.copyfile(filename, best_name)
 
 import logging
 

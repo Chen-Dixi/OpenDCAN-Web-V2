@@ -1,6 +1,7 @@
 import os
 allow_cors_origins = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "http://mystation:3000",
 ]
 
 DATASET_UPLOAD_PATH="_data/"

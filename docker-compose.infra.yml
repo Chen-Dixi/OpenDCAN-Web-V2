@@ -1,9 +1,0 @@
-version: '2'
-
-services:
-  rabbitmq:
-    image: rabbitmq:3.9.14-alpine
-    container_name: rabbitmq-server
-    hostname: my-rabbitmq
-    ports:
-      - "5672:5672"

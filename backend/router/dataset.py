@@ -14,8 +14,8 @@ router = APIRouter(
     tags=["dataset"]
 )
 
-async def unzip_the_target_dataset(file_path: str, db: Session):
-    await dataset_service.unpack_dataset_archive(file_path, db)
+async def unzip_the_target_dataset(dataset_id: int, file_path: str, db: Session):
+    await dataset_service.unpack_dataset_archive(dataset_id, file_path, db)
 
 async def unzip_the_source_dataset(dataset_id: int, file_path: str, db: Session):
     await dataset_service.unpack_source_dataset_archive(dataset_id, file_path, db)
@@ -32,10 +32,10 @@ async def uplaod_target_dataset(file: UploadFile, background_tasks: BackgroundTa
     3. 更新数据库 表 target_dataset_record
     4. 返回
     """
-    db_dataset_record = dataset_service.upload_target_dataset(file, user, db)
+    db_dataset_record = await dataset_service.upload_target_dataset(file, user, db)
 
     # send asynchronous message to unzip the file
-    background_tasks.add_task(unzip_the_target_dataset, (await db_dataset_record).file_path, db)
+    background_tasks.add_task(unzip_the_target_dataset, db_dataset_record.id, db_dataset_record.file_path, db)
     
     return {"filename": file.filename}
 

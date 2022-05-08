@@ -57,14 +57,15 @@ async def upload_source_dataset(file: UploadFile, user: entity.User, db: Session
     
     return dto.SourceDatasetRecordDto.from_orm(db_source_dataset)
     
-async def unpack_dataset_archive(filepath: str, db: Session):
+async def unpack_dataset_archive(dataset_id: int, filepath: str, db: Session):
     extrac_dir = filepath[:filepath.index('.')]
     
     shutil.unpack_archive(filename=filepath, extract_dir=extrac_dir)
-    crud.update_target_dataset(filepath, {'state':1,'file_path':extrac_dir}, db)
+    crud.update_target_dataset(dataset_id, {'state':1,'file_path':extrac_dir}, db)
 
 def find_classes(dir):
     classes = [d.name for d in os.scandir(dir) if d.is_dir() and d.name != DIRIGNORE]
+    classes.sort() # 一定要排序，这样才能和 训练时一致
     return classes
 
 async def unpack_source_dataset_archive(dataset_id: int, filepath: str, db: Session):

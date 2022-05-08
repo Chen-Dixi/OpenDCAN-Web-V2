@@ -4,6 +4,7 @@ import pickle
 import asyncio
 from aio_pika import connect_robust
 from aio_pika.patterns import RPC
+from numpy import record
 
 from rpc_client import FastApiRpcClient
 
@@ -29,10 +30,10 @@ async def training_ack(model_id: int):
     res = await aio_rpc_client.rpc.proxy.model_start_training(model_id = model_id)
     return res
 
-async def finish_training_ack(task_id: int, model_id: int, state: int):
+async def finish_training_ack(task_id: int, model_id: int, file_path:str, state: int):
     aio_rpc_client = FastApiRpcClient() # 使用默认配置
     await aio_rpc_client.initialize()
-    res = await aio_rpc_client.rpc.proxy.model_finish_training(task_id = task_id, model_id = model_id, state = state)
+    res = await aio_rpc_client.rpc.proxy.model_finish_training(task_id = task_id, model_id = model_id, file_path = file_path, state = state)
     return res
 
 def training_consumer(ch, method, properties, body):
@@ -55,19 +56,31 @@ def training_consumer(ch, method, properties, body):
     response = asyncio.run(training_ack(model_id))
 
     print(" [x] Get response:%d" % (response))
-    
+    checkpoint_dir = '_model/task_%d/model_%d/' % (task_id, model_id)
+    checkpoint_file_name = 'latest.pth.tar'
     pid = os.fork()
     if pid == 0:
         # 子进程
         env = dict(os.environ)
-        # os.execlpe('python', 'python', 'main_train.py', '--source-path', source_path, '--target-path', target_path, env)
-        os.execlpe('python', 'python', 'test.py', env)
+        os.execlpe('python', 'python', 
+        'main_train.py', 
+        '--source_path', source_path, 
+        '--target_path', target_path, 
+        '--task_id', str(task_id),
+        '--model_id', str(model_id),
+        '--checkpoint_dir', checkpoint_dir,
+        '--checkpoint_file_name', checkpoint_file_name,
+        env)
+        # os.execlpe('python', 'python', 'test.py', env)
     else:
         childProcExitInfo = os.wait()
         # os.waitstatus_to_exitcode(childProcExitInfo[1]) # if python==3.9
         exit_code = childProcExitInfo[1] >> 8
         if exit_code == 1:
-            response = asyncio.run(finish_training_ack(task_id, model_id, 4))
+            response = asyncio.run(finish_training_ack(task_id, model_id, checkpoint_dir+checkpoint_file_name, 4))
         elif exit_code == 0:
-            response = asyncio.run(finish_training_ack(task_id, model_id, 1))
+            response = asyncio.run(finish_training_ack(task_id, model_id, checkpoint_dir+checkpoint_file_name, 1))
         print("Child process exit code: %d"%(exit_code))
+
+def inference_consumer(ch, method, properties, body):
+    pass
