@@ -91,12 +91,6 @@ async def get_source_dataset(dataset_id:int, user:entity.User = Depends(get_curr
 async def get_source_dataset_list(limit: int,
     offset: int,
     ipp: int, user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
-    
-    # if (user.user_type != 1): 
-    #     raise HTTPException(
-    #         status_code=401,
-    #         detail="Only Administrator can upload source dataset",
-    #         headers={"WWW-Authenticate": "Bearer"})
 
     result = await dataset_service.get_source_records(limit, offset, ipp, db)
     # records_dto = [dto.TargetDatasetDto.from_orm(record) for record in records]

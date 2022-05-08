@@ -32,7 +32,7 @@
                 <el-form-item label="描述" :label-width="formLabelWidth">
                     <el-input
                         v-model="form.description"
-                        :rows="4"
+                        :rows="6"
                         type="textarea"
                         placeholder="Please input"
                     />
@@ -52,15 +52,8 @@
 
 <script setup lang="ts">
 import { Edit } from '@element-plus/icons-vue'
-import { reactive, ref } from 'vue'
-const editFormVisible = ref(false)
 
 const formLabelWidth = '60px'
-
-const form = reactive({
-  title: '',
-  description: '',
-})
 
 </script>
 
@@ -73,6 +66,11 @@ export default {
         return {
             source_dataset:{},
             source_labels:[],
+            form: {
+                title: '',
+                description: '',
+            },
+            editFormVisible: false
         }
     },
     components: {
@@ -85,8 +83,9 @@ export default {
                 
                 this.source_dataset = res.data
                 this.source_labels = []
-                this.form.title = res.data.title
-                this.form.description = res.data.description
+                
+                this.form.title = this.source_dataset.title
+                this.form.description = this.source_dataset.description
                 for(let i =0; i<this.source_dataset.labels.length; i++){
                     let item = {name:this.source_dataset.labels[i]}
                     this.source_labels.push(item)

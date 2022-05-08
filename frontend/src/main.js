@@ -10,9 +10,8 @@ import './assets/css/main.css'
 import router from './router'
 import globalConfig from './common/config'
 
-
-const app = createApp(App)
 const {cookies} = useCookies()
+const app = createApp(App)
 app
     .component('content-filter', ContentFilter)
     .component('upload-dataset-dropdown-menu', UploadDropdownMenu)

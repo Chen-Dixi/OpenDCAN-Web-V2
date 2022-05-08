@@ -147,7 +147,7 @@ class CreateTargetDatasetRecord(BaseModel):
 class UpdateDatasetRecord(BaseModel):
     id: int
     title: str
-    description : str
+    description : Optional[str]
 
 class CreateSourceDatasetRecordDto(BaseModel):
     title: str

@@ -14,7 +14,7 @@
             <el-col :span="12">
                 
 
-                <p>{{ target_dataset.description}}</p>
+                <p class="text-wrapper">{{ target_dataset.description}}</p>
             </el-col>
             <el-col :span="10" :offset="2">
                 <div class="bg-purple-light grid-content"/>
