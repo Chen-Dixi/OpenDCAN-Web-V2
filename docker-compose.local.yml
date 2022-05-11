@@ -62,14 +62,3 @@ services:
     container_name: redis-server
     ports:
       - "6379:6379"
-
-  mysql:
-    image: mysql:latest
-    container_name: opendcan-mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=0907_cdx
-      - MYSQL_DATABASE=opendcan_v2
-    ports:
-      - "3306:3306"
-    volumes:
-      - /Users/xi-os/Documents/程序员/编程开发/Engineering/OpenDCAN-Web-V2/mysql:/var/lib/mysql

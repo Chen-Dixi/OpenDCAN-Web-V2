@@ -1,16 +1,10 @@
-<script lang="ts" setup>
-import { Plus } from '@element-plus/icons-vue'
-const props = defineProps({
-  task_prop: Object,
-});
-</script>
 <template>
   <div class="text-align-left margin-bottom-20">
-    <el-select  v-model="selected_model_id" placeholder="选择模型">
+    <el-select v-model="model_id" class="m-2" placeholder="选择模型">
       <el-option
         v-for="model in model_selections"
         :key="model.id"
-        :label="model.id+':  '+model.file_path"
+        :label="model.file_path"
         :value="model.id"
       />
     </el-select>  
@@ -76,27 +70,32 @@ const props = defineProps({
     </el-tab-pane>
   </el-tabs>
 </template>
+
 <script lang="ts">
 import {useCookies} from 'vue3-cookies'
+import { Plus } from '@element-plus/icons-vue'
 import requests from '../common/api';
-const {cookies} = useCookies()
 import type { UploadInstance, UploadFile, UploadRawFile, UploadFiles } from 'element-plus'
 import globalConfig from '../common/config'
 import { ElMessage, } from 'element-plus'
 import {genFileId} from 'element-plus'
-import {ref} from 'vue'
+import { ref } from 'vue'
+const {cookies} = useCookies()
 
 export default {
-  setup(props) {
-    const uploadRef = ref<UploadInstance>()
+  props:['task_prop'],
+  components: {
+    Plus: Plus
+  },
+  setup(){
+    const model_id = ref()
     return {
-      uploadRef
+      model_id
     }
   },
-  data(){
+  data() {
     return {
       model_selections: [],
-      selected_model_id: null,
       activeTab: 'first',
       imageUrl: '',
       predict: '',
@@ -185,12 +184,12 @@ export default {
 
     submitUpload() {
 
-      if (this.selected_model_id == null) {
+      if (this.model_id == null) {
         ElMessage.error('请选择用于推理的模型!')
         return
       }
       
-      this.uploadData = {'model_id': this.selected_model_id, 'task_id': this.$route.params.taskId}
+      this.uploadData = {'model_id': this.model_id, 'task_id': this.$route.params.taskId}
 
       this.$refs['uploadRef'].submit()
     },

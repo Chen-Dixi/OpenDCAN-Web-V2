@@ -10,8 +10,9 @@ services:
     volumes:
       - "/home/dixi/Research/project/OpenDCAN-Web-V2/backend:/backend"
     environment:
-    - DATABASE_URI=docker.for.mac.localhost
+    - DATABASE_URI=mysql
     - RABBITMQ_URI=rabbitmq
+    - REDIS_URL=redis://redis:6379/0
     ports:
       - "8000:8000"
 
@@ -35,17 +36,25 @@ services:
               device_ids: ['0']
               capabilities: [gpu]
     
-  # runner-inference:
-  #   image: chendixi/torch190_zsh:latest
-  #   container_name: opendcan-runner-inference
-  #   volumes:
-  #     - "/home/dixi/Research/project/OpenDCAN-Web-V2/backend:/backend"
-  #   working_dir: /backend/runner
-  #   command: python inference_consumer_main.py
-  #   environment:
-  #   - RABBITMQ_URI=rabbitmq
-  #   depends_on:
-  #     - rabbitmq
+  runner-inference:
+    image: chendixi/torch190_zsh:latest
+    container_name: opendcan-runner-inference
+    volumes:
+      - "/home/dixi/Research/project/OpenDCAN-Web-V2/backend:/backend"
+    working_dir: /backend/runner
+    command: python inference_consumer_main.py
+    environment:
+    - RABBITMQ_URI=rabbitmq
+    - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - rabbitmq
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu]
 
   opendcan-vue:
     image: chendixi/dcan-vue:latest
@@ -67,7 +76,7 @@ services:
     container_name: redis-server
     ports:
       - "6379:6379"
-      
+
   mysql:
     image: mysql:latest
     container_name: opendcan-mysql

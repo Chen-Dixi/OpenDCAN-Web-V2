@@ -94,8 +94,8 @@ def inference_sample_consumer(ch, method, properties, body):
     model_path = body['model_path']
     check_id = body['check_id']
     classes = body['classes']
+    
     # 直接调用函数运行，不fork子进程了，预测结果直接在这写入 redis
-
     sample_path = os.path.join(DATASET_BASE_PATH, sample_path)
     model_path = os.path.join(MODEL_BASE_PATH, model_path)
     
@@ -115,7 +115,7 @@ def inference_sample_consumer(ch, method, properties, body):
         # write result to redis using check_id as key
         
         redis_client.set('inferencesample:{}'.format(check_id),
-                        res_message)
+                        res_message, ex = 100)
         print("Response to check id: {}".format(check_id))
     except Exception as e:
         res_message = {
@@ -126,7 +126,7 @@ def inference_sample_consumer(ch, method, properties, body):
         # write result to redis using check_id as key
         
         redis_client.set('inferencesample:{}'.format(check_id),
-                        res_message)
+                        res_message,  ex = 100)
         print("Send Error to check id: {}".format(check_id))
     
     

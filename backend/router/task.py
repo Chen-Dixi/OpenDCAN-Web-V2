@@ -2,7 +2,7 @@ import json
 from fastapi import APIRouter, Depends, Request, UploadFile, Form
 from sqlalchemy.orm import Session
 
-from dependencies import get_current_active_user, get_db
+from dependencies import get_current_active_user, get_db, get_rabbitmq_blockingconnection
 from repository import entity, dto
 from domain import task_service
 
@@ -55,7 +55,7 @@ async def get_task_train(taskId: int, user: entity.User = Depends(get_current_ac
 
 @router.post("/train/create")
 async def create_model_training(createDto: dto.CreateTrainingTaskDto,
-                                request: Request,
+                                pika_publisher = Depends(get_rabbitmq_blockingconnection),
                                 user: entity.User = Depends(get_current_active_user),
                                 db: Session = Depends(get_db)
                                 ):
@@ -63,7 +63,7 @@ async def create_model_training(createDto: dto.CreateTrainingTaskDto,
     创建异步训练任务
     """# check if task belongs to current user.
     _ = await task_service.get_task_detail(createDto.task_id, user.username, db)
-    model_id = await task_service.start_training(createDto, user.username, db, request.app.pika_publisher)
+    model_id = await task_service.start_training(createDto, user.username, db, pika_publisher)
 
     return {"model": model_id}
     
@@ -78,6 +78,7 @@ async def get_model_selection_for_play(task_id: int, user: entity.User = Depends
 @router.post("/play/inference/sample", response_model=dto.StartInferenceSampleResponse)
 async def inference_sample(file: UploadFile, request: Request,
                            task_id: int = Form(...), model_id: int = Form(...),
+                           pika_publisher = Depends(get_rabbitmq_blockingconnection),
                            user: entity.User = Depends(get_current_active_user),
                            db: Session = Depends(get_db)):
     print("task id: {}\n model_id: {}".format(task_id, model_id))
@@ -85,7 +86,7 @@ async def inference_sample(file: UploadFile, request: Request,
     _ = await task_service.get_task_detail(task_id, user.username, db)
 
     # 文件要发送过去？ 临时存储文件, 消息传递一个文件名字过去，训练完后删除
-    check_id = await task_service.start_inference_single_sample(file, model_id, request.app.pika_publisher, db)
+    check_id = await task_service.start_inference_single_sample(file, model_id, pika_publisher, db)
     return {"check_id": check_id}
 
 @router.get("/play/sample/{check_id}/check", response_model=dto.CheckInferenceSampleResponse)

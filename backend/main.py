@@ -7,19 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from router import user, dataset, task, base_router
 from settings import allow_cors_origins, RABBITMQ_URI
-from mq.rabbitmq import PikaPublisher
 from rpc.router import rpc_router_start_training, rpc_router_finish_training
 from cache.redis import init_redis_pool
 # create database table, skip this if there already has one
 # entity.Base.metadata.create_all(bind=engine)
 
-class DixiFastAPI(FastAPI):
-    def __init__(self,*args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.pika_publisher = PikaPublisher()
-
 # app = FastAPI(docs_url='/api/v1/docs')
-app = DixiFastAPI(docs_url='/api/v1/docs')
+app = FastAPI(docs_url='/api/v1/docs')
 app.include_router(base_router.router, prefix="/api/v1")
 app.include_router(user.router, prefix="/api/v1")
 app.include_router(dataset.router, prefix="/api/v1")
