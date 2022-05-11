@@ -273,3 +273,31 @@ class CreateTrainingTaskDto(BaseModel):
     source_name: str
     target_id: int
     target_name: str
+
+class ModelSelection(BaseModel):
+    """Play页面下拉选择框 数据对象
+    """
+    id: int
+    source_id:int
+    target_id:int
+    file_path: Optional[str]
+    
+    class Config:
+        orm_mode = True
+
+class QueryModelSelectionResponse(BaseModel):
+    selections: List[ModelSelection]
+
+class SampleInferenceResponse(BaseModel):
+    unknown_likelihood: float
+    predict: str
+
+class StartInferenceSampleResponse(BaseModel):
+    """Play 界面，提交一张图片进行推理时 返回的数据对象
+    """
+    check_id: str
+
+class CheckInferenceSampleResponse(BaseModel):
+    state: str
+    predict_class: Optional[str]
+    likelihood: Optional[str]

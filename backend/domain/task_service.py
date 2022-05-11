@@ -1,10 +1,14 @@
+import os
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, UploadFile
 from mq.rabbitmq import PikaPublisher
 
 from repository import entity, dto, crud
+from settings import UPLOAD_IMAGE_EXTENSIONS, DATASET_UPLOAD_PATH
+
+from common import utils
 
 async def get_task_records(ipp: int,
     offset: int,
@@ -63,7 +67,7 @@ async def start_training(createDto: dto.CreateTrainingTaskDto, username: str, db
     if (db_target is None) or (db_source is None) or (db_target.state != 1) or (db_source.state != 1):
         raise HTTPException(status_code=400, detail="Data not found")
 
-    # TBD发送消息，提交一个 训练任务
+    # 消息队列 提交一个 训练任务
     # mq_channel.basic_publish(exchange='dl_task', routing_key='train', body='Hello')
     mq_message = {
         'source_path': db_source.file_path,
@@ -75,3 +79,60 @@ async def start_training(createDto: dto.CreateTrainingTaskDto, username: str, db
     pika_publisher.send_training_task(mq_message)
     db.commit()
     return db_model_record.id
+
+async def start_inference_single_sample(file: UploadFile, model_id: int, pika_publisher: PikaPublisher, db: Session):
+    """
+    用训练好的模型，预测一个图片样本
+    1. 图片临时存储在文件系统中
+    2. 把文件路径，模型文件路径通过消息中间件传递过去
+    3. 返回一个uuid 给 前端，前端用这个uuid 不断询问fastapi 推理结果
+    3. 推理结束后, 返回结果给FastAPI，写入redis里面。
+    4. 推理完成后，此时前端向fastapi询问结果时，就能得到结果。
+    """
+    # 查询模型文件路径
+    db_model = crud.get_active_model_record_by_id(model_id, db)
+    if db_model is None:
+        raise HTTPException(status_code=400, detail="Data not found")
+    db_source = crud.get_source_dataset_record_by_id(db, db_model.source_id)
+    source_dto = dto.SourceDatasetRecordDto.from_orm(db_source)
+
+    # 获取源域数据集的信息，需要用到它的 classes
+    if db_source is None:
+        raise HTTPException(status_code=400, detail="Data not found")
+    # 将图片作为临时文件保存
+    content = await file.read()
+    origin_filename = file.filename
+    if not any(origin_filename.endswith(ext) for ext in UPLOAD_IMAGE_EXTENSIONS):
+        raise HTTPException(status_code=400, detail="File is not an allowed extension.")
+    suffix = origin_filename[origin_filename.index('.'):]
+    
+    uuid_id = utils.generateUUID()
+    filename = uuid_id+'_'+origin_filename
+    save_dir = os.path.join(DATASET_UPLOAD_PATH, 'tmp')
+    
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir, exist_ok=True)
+    save_path = os.path.join(save_dir, filename)
+
+    with open(save_path,'wb') as f:
+        f.write(content)
+
+    # 发送消息 给 runner-inference
+    mq_message = {
+        'sample_path': save_path,
+        'classes': source_dto.labels,
+        'model_path': db_model.file_path,
+        'check_id': uuid_id,
+    }
+    pika_publisher.send_sample_label(mq_message)
+    # 返回 uuid token 给前端，用这个uuid查询推理结果
+    return uuid_id
+
+async def get_ready_model_selections(task_id:int, username: str, db: Session):
+    task_db = crud.get_task_record_by_id(db, task_id)
+    if task_db.username != username:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Unauthorized access to data")
+    
+    selections = crud.get_ready_model_records_by_taskId(task_id, db)
+
+    return [dto.ModelSelection.from_orm(selection) for selection in selections]

@@ -1,0 +1,9 @@
+FROM chendixi/torch190_zsh:latest
+WORKDIR /root
+
+RUN pip install redis==4.3.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+CMD ["zsh"]
+
+ENV LANG C.UTF-8
+EXPOSE 8000

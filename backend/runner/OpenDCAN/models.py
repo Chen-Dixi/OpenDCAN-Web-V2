@@ -1,11 +1,19 @@
 #VGG 和 Alexnet
+import torch
 from torchvision import models
+import torchvision.transforms as transforms
 import torch.nn.functional as F
 import torch.nn as nn
 from torch.autograd import Function
+
 from .gradien_reverse import GradReverseLayer #调用了dixitool
-import torch
+from .functions import load_from_checkpoint
+
 import math
+from PIL import Image
+
+
+
 """
 class VGGBase(nn.Module):
     # Model VGG
@@ -227,3 +235,56 @@ class ResClassifier(nn.Module):
             x = self.grad_reverse_layer(x, self.lambd)
         x = self.classifier(x)
         return x
+
+def eval_likelihood(pred):
+    pred = F.softmax(pred, dim=1) #0~1
+    likelihood = pred.max(dim=1)[0]
+    return likelihood
+
+class ResNetInferenceModel(object):
+    
+    def __init__(self, num_classes):
+        self.encoder = ResBase(option='resnet50', pret=False, print_structure=False)
+        self.classifier = ResClassifier(num_classes)
+        self.device=torch.device('cpu')
+        # convert to device
+        if(torch.cuda.is_available()):
+            self.device = torch.device('cuda:0')
+        self.encoder.to(self.device)
+        self.classifier.to(self.device)
+        
+        self.encoder.eval()
+        self.classifier.eval()
+
+
+    def load_parameter(self, model_path):
+        state_dict_list = load_from_checkpoint(model_path, 'G_state_dict','C_state_dict')
+        self.encoder.load_state_dict(state_dict_list[0])
+        self.classifier.load_state_dict(state_dict_list[1])
+
+    # 模型推理
+    def predict(self, file):
+        img = Image.open(file)
+        sample = img.convert('RGB')
+
+        transform = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),#center crop，传入224，因为正好可以在lower之后得到6*6大小的feature map
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
+
+        sample = transform(sample)
+        input_t = sample.unsqueeze(0)
+        with torch.no_grad():
+            input_t = input_t.to(self.device)
+            feat = self.encoder(input_t)
+            pred = self.classifier(feat)
+
+            likelihoods = eval_likelihood(pred)# (batch,) 1维向量
+            pred_labels = torch.argmax(pred,dim=1) #(batch, )
+
+            likelihood = likelihoods[0].item()
+            pred_label = pred_labels[0].item()
+
+        return pred_label, likelihood

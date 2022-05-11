@@ -1,5 +1,5 @@
-docker-compose up -d mysql rabbitmq
+docker-compose up -d rabbitmq
 
 sleep 15
 
-docker-compose up -d
+docker-compose up -d opendcan-vue runner-train opendcan-backend

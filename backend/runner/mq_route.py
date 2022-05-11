@@ -1,12 +1,17 @@
 import os
 
 import pickle
+import json
 import asyncio
 from aio_pika import connect_robust
 from aio_pika.patterns import RPC
 from numpy import record
 
 from rpc_client import FastApiRpcClient
+from inference_service import inference_sample
+
+from settings import DATASET_BASE_PATH, MODEL_BASE_PATH, REDIS_URL
+from redis import Redis
 
 __all__ = [
     'training_consumer'
@@ -82,5 +87,46 @@ def training_consumer(ch, method, properties, body):
             response = asyncio.run(finish_training_ack(task_id, model_id, checkpoint_dir+checkpoint_file_name, 1))
         print("Child process exit code: %d"%(exit_code))
 
-def inference_consumer(ch, method, properties, body):
-    pass
+def inference_sample_consumer(ch, method, properties, body):
+    body = pickle.loads(body)
+    print(" [x] %r:%r" % (method.routing_key, body))
+    sample_path = body['sample_path']
+    model_path = body['model_path']
+    check_id = body['check_id']
+    classes = body['classes']
+    # 直接调用函数运行，不fork子进程了，预测结果直接在这写入 redis
+
+    sample_path = os.path.join(DATASET_BASE_PATH, sample_path)
+    model_path = os.path.join(MODEL_BASE_PATH, model_path)
+    
+    redis_client = Redis.from_url(REDIS_URL, encoding = "utf-8")
+    # 调用模型推理
+    try:
+        predict_class, likelihood = inference_sample(model_path, sample_path, classes)
+        # 编码推理结果
+        res_message = {
+            'predict_class': predict_class,
+            'likelihood': likelihood,
+            'state': "SUCCESS",
+        }
+        # 使用pickel 会导致 读取错误 UnicodeDecodeError: 'utf-8' codec can't decode byte 0x80 in position 0: invalid start byte
+        res_message = json.dumps(res_message)
+        
+        # write result to redis using check_id as key
+        
+        redis_client.set('inferencesample:{}'.format(check_id),
+                        res_message)
+        print("Response to check id: {}".format(check_id))
+    except Exception as e:
+        res_message = {
+            'state': "ERROR",
+        }
+        res_message = json.dumps(res_message)
+        
+        # write result to redis using check_id as key
+        
+        redis_client.set('inferencesample:{}'.format(check_id),
+                        res_message)
+        print("Send Error to check id: {}".format(check_id))
+    
+    

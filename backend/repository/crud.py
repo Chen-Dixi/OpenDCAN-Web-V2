@@ -196,6 +196,18 @@ def get_model_records_by_taskId(task_id, db: Session):
                 .order_by(entity.ModelRecord.update_time.desc()) \
                 .all()
     return records
+
+def get_active_model_record_by_id(model_id:int, db: Session) -> entity.ModelRecord:
+    db_model = db.query(entity.ModelRecord).filter(entity.ModelRecord.id == model_id, entity.ModelRecord.state == 1, entity.ModelRecord.is_active == 1) \
+                 .first()
+                
+    return db_model
+
+def get_ready_model_records_by_taskId(task_id, db: Session):
+    records = db.query(entity.ModelRecord).filter(entity.ModelRecord.task_id == task_id,  entity.ModelRecord.is_active == 1) \
+                .order_by(entity.ModelRecord.update_time.desc()) \
+                .all()
+    return records
     
 def create_model_record(db: Session, 
                         task_id: int,

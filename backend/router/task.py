@@ -1,14 +1,9 @@
-import re
-from time import sleep
-from typing import List
-from os import path
-
-from fastapi import APIRouter, Depends, Request
+import json
+from fastapi import APIRouter, Depends, Request, UploadFile, Form
 from sqlalchemy.orm import Session
 
 from dependencies import get_current_active_user, get_db
 from repository import entity, dto
-
 from domain import task_service
 
 router = APIRouter(
@@ -51,6 +46,8 @@ async def get_task(taskId: int, user: entity.User = Depends(get_current_active_u
 
 @router.get("/train/{taskId}", response_model=dto.QueryTaskTrainResponse)
 async def get_task_train(taskId: int, user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    """查询发起过的训练记录，显示在 任务详情'Train'栏目页的列表中
+    """
     # check if task belongs to current user.
     _ = await task_service.get_task_detail(taskId, user.username, db)
     trainings = await task_service.get_task_model_records(task_id=taskId, db=db)
@@ -70,3 +67,37 @@ async def create_model_training(createDto: dto.CreateTrainingTaskDto,
 
     return {"model": model_id}
     
+@router.get("/play/model/list/{task_id}", response_model=dto.QueryModelSelectionResponse)
+async def get_model_selection_for_play(task_id: int, user: entity.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    """返回训练完成的模型对象, modelrecord.state == 1
+    """
+
+    selections = await task_service.get_ready_model_selections(task_id, user.username, db)
+    return {"selections": selections}
+    
+@router.post("/play/inference/sample", response_model=dto.StartInferenceSampleResponse)
+async def inference_sample(file: UploadFile, request: Request,
+                           task_id: int = Form(...), model_id: int = Form(...),
+                           user: entity.User = Depends(get_current_active_user),
+                           db: Session = Depends(get_db)):
+    print("task id: {}\n model_id: {}".format(task_id, model_id))
+    # check if task belongs to current user.
+    _ = await task_service.get_task_detail(task_id, user.username, db)
+
+    # 文件要发送过去？ 临时存储文件, 消息传递一个文件名字过去，训练完后删除
+    check_id = await task_service.start_inference_single_sample(file, model_id, request.app.pika_publisher, db)
+    return {"check_id": check_id}
+
+@router.get("/play/sample/{check_id}/check", response_model=dto.CheckInferenceSampleResponse)
+async def inference_sample_check(check_id: str, request: Request):
+    """异步接口，提交一个样本进行预测后，通过此接口查询模型推理结果
+    """
+    cache_key = "inferencesample:{}".format(check_id)
+    redis = request.app.state.redis
+    value = await redis.get(cache_key)
+
+    if value is None:
+        return {"state":"PENDING"}
+    
+    body = json.loads(value)
+    return body

@@ -1,80 +1,27 @@
 <script lang="ts" setup>
-import {ref} from 'vue'
-import { Plus, UploadFilled } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
-import {genFileId} from 'element-plus'
-import type { UploadProps, UploadInstance, UploadUserFile, UploadRawFile } from 'element-plus'
-
+import { Plus } from '@element-plus/icons-vue'
 const props = defineProps({
   task_prop: Object,
 });
-
-const activeTab = ref('first')
-const imageUrl = ref('')
-const predict = ref('Unknown')
-const unknown_likelihood = ref('83.389')
-const uploadActionUrl = "https://jsonplaceholder.typicode.com/posts/"
-// 上传器实例
-const uploadRef = ref<UploadInstance>()
-
-const beforeImageUpload: UploadProps['beforeUpload'] = (rawFile) => {
-  if (rawFile.type !== 'image/jpeg' && rawFile.type !== 'image/png') {
-    ElMessage.error('Avatar picture must be JPG or PNG format!')
-    return false
-  } else if (rawFile.size / 1024 / 1024 > 2) {
-    ElMessage.error('Avatar picture size can not exceed 2MB!')
-    return false
-  }
-  return true
-}
-
-const handleUploadSuccess: UploadProps['onSuccess'] = (
-  response,
-  uploadFile
-) => {
-  console.log(response)
-}
-
-const handleUploadError: UploadProps['onError'] = (
-  error,
-  uploadFile
-) => {
-  console.log(error)
-}
-
-const handleRemove: UploadProps['onRemove'] = (uploadFile, uploadFiles) => {
-  // uploadFiles === 0
-  imageUrl.value = ''
-}
-
-const handleOnChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
-  if (uploadFiles.length === 1 && beforeImageUpload(uploadFile.raw)){
-    imageUrl.value = URL.createObjectURL(uploadFile.raw!)
-  }else if (uploadFiles.length === 1) {
-    uploadRef.value!.clearFiles()
-    imageUrl.value = ''
-  }
-}
-
-const handleExceed: UploadProps['onExceed'] = (files) => {
-  uploadRef.value!.clearFiles()
-  const file = files[0] as UploadRawFile
-  file.uid = genFileId()
-  uploadRef.value!.handleStart(file)
-}
-
-const submitUpload = () => {
-  uploadRef.value!.submit()
-}
-
 </script>
 <template>
+  <div class="text-align-left margin-bottom-20">
+    <el-select  v-model="selected_model_id" placeholder="选择模型">
+      <el-option
+        v-for="model in model_selections"
+        :key="model.id"
+        :label="model.id+':  '+model.file_path"
+        :value="model.id"
+      />
+    </el-select>  
+  </div>
+  
   <el-tabs
     v-model="activeTab"
     type="card"
     class="play-tabs"
   >
-    <el-tab-pane label="单样本" name="first">
+    <el-tab-pane label="单样本" name="first" v-loading="sample_loading">
       <!-- 上传图片，和第一个版本的界面一样 -->
       <div>
         <!-- 内容样式由.play-tabs > .el-tabs__content控制 -->
@@ -85,6 +32,7 @@ const submitUpload = () => {
           ref="uploadRef"
           class="avatar-uploader"
           :auto-upload="false"
+          :headers="uploadHeader"
           :limit="1"
           :on-exceed="handleExceed"
           :action="uploadActionUrl"
@@ -93,6 +41,7 @@ const submitUpload = () => {
           :on-change="handleOnChange"
           :on-remove="handleRemove"
           :before-upload="beforeImageUpload"
+          :data="uploadData"
         >
           <div v-if="imageUrl" class="image-predict-tag-holder">
             <img  :src="imageUrl" class="uploader-image">
@@ -110,7 +59,7 @@ const submitUpload = () => {
         </el-upload>
         <el-row class="row-bg" justify="center" :gutter="20">
           <el-col :span="3">
-            <el-button v-if="imageUrl" @click="analyse" round>识别</el-button>
+            <el-button v-if="imageUrl" @click="submitUpload" round>识别</el-button>
             
           </el-col>
           <el-col :span="3">
@@ -128,17 +77,143 @@ const submitUpload = () => {
   </el-tabs>
 </template>
 <script lang="ts">
+import {useCookies} from 'vue3-cookies'
+import requests from '../common/api';
+const {cookies} = useCookies()
+import type { UploadInstance, UploadFile, UploadRawFile, UploadFiles } from 'element-plus'
+import globalConfig from '../common/config'
+import { ElMessage, } from 'element-plus'
+import {genFileId} from 'element-plus'
+import {ref} from 'vue'
+
 export default {
-  methods:{
-    analyse(){
-      console.log('analyse!')
-      this.uploadRef.submit()
-    },
-    clear() {
-      this.uploadRef.clearFiles()
-      this.imageUrl = ''
+  setup(props) {
+    const uploadRef = ref<UploadInstance>()
+    return {
+      uploadRef
     }
-  }
+  },
+  data(){
+    return {
+      model_selections: [],
+      selected_model_id: null,
+      activeTab: 'first',
+      imageUrl: '',
+      predict: '',
+      unknown_likelihood: '',
+      sample_check_id: '',
+      uploadActionUrl: globalConfig.backend_service_url + '/task/play/inference/sample',
+      uploadData: {},
+      uploadHeader: {Authorization: 'Bearer '+cookies.get('access_token'),},
+      sample_loading: false,
+      sample_check_timer: null,
+    }
+  },
+  methods:{
+    getModelSelection(){
+      // 下拉框 加载可选的 预训练模型
+      requests.GetReadyTaskModelSelection(this.$route.params.taskId, this).then(res => {
+        this.model_selections = res.data.selections
+      });
+    },
+
+    beforeImageUpload(rawFile: UploadRawFile){
+      if (rawFile.type !== 'image/jpeg' && rawFile.type !== 'image/png') {
+        ElMessage.error('Picture must be JPG or PNG format!')
+        return false
+      } else if (rawFile.size / 1024 / 1024 > 2) {
+        ElMessage.error('Picture size can not exceed 2MB!')
+        return false
+      }
+
+      return true
+    },
+
+    handleUploadSuccess(response, uploadFile: UploadFile){
+      console.log(response)
+      this.sample_check_id = response.check_id
+      this.sample_loading = true;
+      
+      // 上传成功后， 循环等待 推理结果
+      this.sample_check_timer = setInterval(() => {
+        requests.CheckSampleInferenceResult(this.sample_check_id, this).then(res => {
+          if (res.data.state == 'SUCCESS'){
+            this.sample_loading = false;
+            this.predict = res.data.predict_class
+            this.unknown_likelihood = res.data.likelihood
+            this.end_timer()
+          } else if (res.data.state == 'ERROR'){
+            this.sample_loading = false;
+            this.end_timer()
+            this.$notify.error({
+              title: '错误',
+              message: '模型运行失败',
+            })
+          }
+        });
+      }, 1000);
+    },
+
+    handleUploadError(error, uploadFile: UploadFile){
+      console.log(error)
+      this.sample_loading = false;
+      this.$notify.error({
+        title: '错误',
+        message: error.detail
+      })
+    },
+
+    handleRemove(uploadFile: UploadFile, uploadFiles: UploadFiles){
+      this.imageUrl = ''
+    },
+
+    handleOnChange(uploadFile: UploadFile, uploadFiles: UploadFiles){
+        if (uploadFiles.length === 1 && this.beforeImageUpload(uploadFile.raw)){
+          this.imageUrl = URL.createObjectURL(uploadFile.raw!)
+        }else if (uploadFiles.length === 1) {
+          this.$refs['uploadRef'].clearFiles()
+          this.imageUrl = ''
+        }
+    },
+
+    handleExceed(files) {
+      this.$refs['uploadRef'].clearFiles()
+      let file = files[0] as UploadRawFile
+      file.uid = genFileId()
+      this.$refs['uploadRef'].handleStart(file)
+    },
+
+    submitUpload() {
+
+      if (this.selected_model_id == null) {
+        ElMessage.error('请选择用于推理的模型!')
+        return
+      }
+      
+      this.uploadData = {'model_id': this.selected_model_id, 'task_id': this.$route.params.taskId}
+
+      this.$refs['uploadRef'].submit()
+    },
+
+    clear (){
+      this.$refs['uploadRef'].clearFiles()
+      this.imageUrl = ''
+      this.predict = ''
+      this.unknown_likelihood = ''
+    },
+    end_timer(){
+      clearInterval(this.sample_check_timer);
+      this.sample_check_timer = null // 这里最好清除一下，回归默认值
+    },
+  },
+
+  created(){
+    this.getModelSelection()
+  },
+  beforeDestroy() {
+    // js提供的clearInterval方法用来清除定时器
+    clearInterval(this.sample_check_timer);
+  },
 }
 </script>
 <style>

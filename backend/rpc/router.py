@@ -1,11 +1,8 @@
 from aio_pika import connect_robust
 from aio_pika.patterns import RPC
 
-from fastapi.logger import logger
-
 from repository.database import SessionLocal
 from repository import crud
-from domain import task_service
 from settings import RABBITMQ_URI
 
 __all__ = [

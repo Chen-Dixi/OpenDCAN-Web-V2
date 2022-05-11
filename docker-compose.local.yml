@@ -8,10 +8,11 @@ services:
     depends_on:
       - rabbitmq
     volumes:
-      - "/home/dixi/Research/project/OpenDCAN-Web-V2/backend:/backend"
+      - "/Users/xi-os/Documents/程序员/编程开发/Engineering/OpenDCAN-Web-V2/backend:/backend"
     environment:
     - DATABASE_URI=docker.for.mac.localhost
     - RABBITMQ_URI=rabbitmq
+    - REDIS_URL=redis://redis:6379/0
     ports:
       - "8000:8000"
 
@@ -19,7 +20,7 @@ services:
     image: chendixi/torch190_zsh:latest
     container_name: opendcan-runner-train
     volumes:
-      - "/home/dixi/Research/project/OpenDCAN-Web-V2/backend:/backend"
+      - "/Users/xi-os/Documents/程序员/编程开发/Engineering/OpenDCAN-Web-V2/backend:/backend"
     working_dir: /backend/runner
     command: python training_consumer_main.py
     environment:
@@ -27,31 +28,25 @@ services:
     - CUDA_LAUNCH_BLOCKING=1
     depends_on:
       - rabbitmq
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              device_ids: ['0']
-              capabilities: [gpu]
-    
-  # runner-inference:
-  #   image: chendixi/torch190_zsh:latest
-  #   container_name: opendcan-runner-inference
-  #   volumes:
-  #     - "/home/dixi/Research/project/OpenDCAN-Web-V2/backend:/backend"
-  #   working_dir: /backend/runner
-  #   command: python inference_consumer_main.py
-  #   environment:
-  #   - RABBITMQ_URI=rabbitmq
-  #   depends_on:
-  #     - rabbitmq
+
+  runner-inference:
+    image: chendixi/torch190_zsh:latest
+    container_name: opendcan-runner-inference
+    volumes:
+      - "/Users/xi-os/Documents/程序员/编程开发/Engineering/OpenDCAN-Web-V2/backend:/backend"
+    working_dir: /backend/runner
+    command: python inference_consumer_main.py
+    environment:
+    - RABBITMQ_URI=rabbitmq
+    - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - rabbitmq
 
   opendcan-vue:
     image: chendixi/dcan-vue:latest
     container_name: opendcan-frontend
     volumes:
-      - "/home/dixi/Research/project/OpenDCAN-Web-V2/frontend/dist:/app"
+      - "/Users/xi-os/Documents/程序员/编程开发/Engineering/OpenDCAN-Web-V2/frontend/dist:/app"
     ports:
       - "3000:80"
 
@@ -61,13 +56,13 @@ services:
     hostname: my-rabbitmq
     ports:
       - "5672:5672"
-
+  
   redis:
     image: redis:6.0-alpine
     container_name: redis-server
     ports:
       - "6379:6379"
-      
+
   mysql:
     image: mysql:latest
     container_name: opendcan-mysql
@@ -77,4 +72,4 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - /home/dixi/Research/project/OpenDCAN-Web-V2/mysql:/var/lib/mysql
+      - /Users/xi-os/Documents/程序员/编程开发/Engineering/OpenDCAN-Web-V2/mysql:/var/lib/mysql

@@ -9,6 +9,7 @@ from router import user, dataset, task, base_router
 from settings import allow_cors_origins, RABBITMQ_URI
 from mq.rabbitmq import PikaPublisher
 from rpc.router import rpc_router_start_training, rpc_router_finish_training
+from cache.redis import init_redis_pool
 # create database table, skip this if there already has one
 # entity.Base.metadata.create_all(bind=engine)
 
@@ -60,3 +61,14 @@ def startup():
     # use the same loop to consume
     asyncio.ensure_future(rpc_router_start_training(loop=loop))
     asyncio.ensure_future(rpc_router_finish_training(loop=loop))
+
+@app.on_event('startup')
+async def startup_redis():
+    print("Redis Startup Conenct")
+    redis = await init_redis_pool()
+    
+    app.state.redis = redis
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await app.state.redis.close()

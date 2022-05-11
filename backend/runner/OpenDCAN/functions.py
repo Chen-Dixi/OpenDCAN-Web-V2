@@ -101,7 +101,11 @@ def load_from_checkpoint(checkpoint_file, *keys):
         raise FileNotFoundError("{} not found".format(checkpoint_file))
 
     results = []
-    checkpoint = torch.load(checkpoint_file)
+    if torch.cuda.is_available():
+        checkpoint = torch.load(checkpoint_file)
+    else:
+        checkpoint = torch.load(checkpoint_file,map_location=torch.device('cpu'))
+        
     for key in keys:
         results.append(checkpoint[key])
     return results

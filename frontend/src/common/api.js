@@ -113,6 +113,14 @@ const axiosCreateTaskTraining = (data, _this) => {
   return request('/task/train/create', data, 'post', _this);
 }
 
+const axiosGetTaskModelSelection = (taskId, _this) => {
+  return request('/task/play/model/list/' + taskId, {}, 'get', _this);
+}
+
+const axiosCheckSampleResult = (checkId, _this) => {
+  return request('/task/play/sample/'+checkId+'/check', {}, 'get', _this);
+}
+
 let requests = {
     Login: axiosLogin,
     Register: axiosRegister,
@@ -129,7 +137,9 @@ let requests = {
     CreateTask: axiosCreateTask,
     UpdateTaskDatasetConfig: axiosUpdateTaskDatasetConfig,
     GetTaskTrainingModel: axiosGetTaskModelList,
+    GetReadyTaskModelSelection: axiosGetTaskModelSelection,
     CreateTaskTraining : axiosCreateTaskTraining,
+    CheckSampleInferenceResult: axiosCheckSampleResult,
 };
 
 export default requests;
