@@ -50,3 +50,6 @@ class PikaPublisher(object):
         channel = await connection.channel()
 
         queue = await channel.declare_queue(name='rpc_server_queue')
+
+    def close(self):
+        self.connection.close()

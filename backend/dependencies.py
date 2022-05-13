@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
@@ -25,7 +23,10 @@ def get_rpc(request: Request):
 
 def get_rabbitmq_blockingconnection():
     pika_publisher = PikaPublisher()
-    return pika_publisher
+    try:
+        yield pika_publisher
+    finally:
+        pika_publisher.close()
 
 def get_db():
     db = SessionLocal()

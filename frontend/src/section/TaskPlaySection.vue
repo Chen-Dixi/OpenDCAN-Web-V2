@@ -211,7 +211,7 @@ export default {
   },
   beforeDestroy() {
     // js提供的clearInterval方法用来清除定时器
-    clearInterval(this.sample_check_timer);
+    this.end_timer()
   },
 }
 </script>

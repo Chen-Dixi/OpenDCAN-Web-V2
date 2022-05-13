@@ -14,7 +14,8 @@ from settings import DATASET_BASE_PATH, MODEL_BASE_PATH, REDIS_URL
 from redis import Redis
 
 __all__ = [
-    'training_consumer'
+    'training_consumer',
+    'inference_sample_consumer'
 ]
 
 async def test():
@@ -117,6 +118,7 @@ def inference_sample_consumer(ch, method, properties, body):
         redis_client.set('inferencesample:{}'.format(check_id),
                         res_message, ex = 100)
         print("Response to check id: {}".format(check_id))
+    
     except Exception as e:
         res_message = {
             'state': "ERROR",
