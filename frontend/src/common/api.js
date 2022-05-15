@@ -121,6 +121,18 @@ const axiosCheckSampleResult = (checkId, _this) => {
   return request('/task/play/sample/'+checkId+'/check', {}, 'get', _this);
 }
 
+const axiosInferenceDataset = (data, _this) => {
+  return request('/task/play/inference/dataset', data, 'post', _this);
+}
+
+const axiosCheckDatasetResult = (checkId, _this) => {
+  return request('/task/play/dataset/'+checkId+'/check', {}, 'get', _this);
+}
+
+const axiosDownloadZip = (param, _this) => {
+  return request('/task/play/inference/download', param, 'get', _this)
+}
+
 let requests = {
     Login: axiosLogin,
     Register: axiosRegister,
@@ -140,6 +152,9 @@ let requests = {
     GetReadyTaskModelSelection: axiosGetTaskModelSelection,
     CreateTaskTraining : axiosCreateTaskTraining,
     CheckSampleInferenceResult: axiosCheckSampleResult,
+    SubmitDatasetInference : axiosInferenceDataset,
+    CheckDatasetInferenceResult: axiosCheckDatasetResult,
+    DownloadZip: axiosDownloadZip,
 };
 
 export default requests;

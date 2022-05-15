@@ -42,6 +42,19 @@ services:
     depends_on:
       - rabbitmq
 
+  runner-inference-dataset:
+    image: chendixi/torch190_zsh:latest
+    container_name: opendcan-runner-inference-dataset
+    volumes:
+      - "/Users/xi-os/Documents/程序员/编程开发/Engineering/OpenDCAN-Web-V2/backend:/backend"
+    working_dir: /backend/runner
+    command: python inference_dataset_main.py
+    environment:
+    - RABBITMQ_URI=rabbitmq
+    - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - rabbitmq
+      
   opendcan-vue:
     image: chendixi/dcan-vue:latest
     container_name: opendcan-frontend

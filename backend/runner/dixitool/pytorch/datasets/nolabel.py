@@ -71,7 +71,7 @@ class NoneLabelDataset(VisionDataset):
         samples (list): List of sample path
     """
     def __init__(self, root, loader, extensions=None,
-                 transform=None, is_valid_file=None):
+                 transform=None, is_valid_file=None, get_path=False):
         super(NoneLabelDataset, self).__init__(root, transform=transform,
                                             target_transform=None)
         samples = make_dataset(self.root, extensions, is_valid_file)
@@ -83,7 +83,7 @@ class NoneLabelDataset(VisionDataset):
 
         self.loader = loader
         self.extensions = extensions
-
+        self.get_path = get_path
         self.samples = samples
     
     def __getitem__(self, index):
@@ -98,6 +98,9 @@ class NoneLabelDataset(VisionDataset):
         sample = self.loader(path)
         if self.transform is not None:
             sample = self.transform(sample)
+
+        if self.get_path is True:
+            return sample, path
 
         return sample
 
@@ -156,6 +159,6 @@ class ImageNoneLabelDataset(NoneLabelDataset):
     """
 
     def __init__(self, root, transform=None,
-                 loader=default_loader, is_valid_file=None):
-        super().__init__(root, loader, IMG_EXTENSIONS if is_valid_file is None else None, transform, is_valid_file)
+                 loader=default_loader, is_valid_file=None, get_path = False):
+        super().__init__(root, loader, IMG_EXTENSIONS if is_valid_file is None else None, transform, is_valid_file, get_path)
         self.imgs = self.samples

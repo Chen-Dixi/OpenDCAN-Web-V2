@@ -301,3 +301,8 @@ class CheckInferenceSampleResponse(BaseModel):
     state: str
     predict_class: Optional[str]
     likelihood: Optional[str]
+
+class CreateDatasetInferenceTaskDto(BaseModel):
+    model_id: int
+    task_id: int
+    dataset_id: int

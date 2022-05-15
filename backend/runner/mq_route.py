@@ -1,4 +1,5 @@
 import os
+import sys
 
 import pickle
 import json
@@ -6,16 +7,19 @@ import asyncio
 from aio_pika import connect_robust
 from aio_pika.patterns import RPC
 from numpy import record
+from traceback import TracebackException
 
 from rpc_client import FastApiRpcClient
-from inference_service import inference_sample
+from inference_service import inference_sample, inference_dataset
+from dixitool.common.utils import get_logging_logger
 
 from settings import DATASET_BASE_PATH, MODEL_BASE_PATH, REDIS_URL
 from redis import Redis
 
 __all__ = [
     'training_consumer',
-    'inference_sample_consumer'
+    'inference_sample_consumer',
+    'inference_dataset_consumer',
 ]
 
 async def test():
@@ -131,4 +135,78 @@ def inference_sample_consumer(ch, method, properties, body):
                         res_message,  ex = 100)
         print("Send Error to check id: {}".format(check_id))
     
+    # 删除文件
+    try:
+        os.remove(path = sample_path)
+    except FileNotFoundError as e:
+        print("File Not Found")
+    except IsADirectoryError as e:
+        print("It is a directory")
+
+
+def inference_dataset_consumer(ch, method, properties, body):
+    """
+    Body message structure:
+    >>> mq_message = {
+        'target_path': db_target.file_path,
+        'classes': source_dto.labels,
+        'model_path': db_model.file_path,
+        'model_id': model_id,
+        'check_id': uuid_id,
+        }
+    """
+    body = pickle.loads(body)
+    print(" [x] %r:%r" % (method.routing_key, body))
     
+    target_path = body['target_path']
+    model_path = body['model_path']
+    check_id = body['check_id']
+    classes = body['classes']
+    
+    # 直接调用函数运行，不fork子进程了，预测结果直接在这写入 redis
+    target_path = os.path.join(DATASET_BASE_PATH, target_path)
+    model_path = os.path.join(MODEL_BASE_PATH, model_path)
+    
+    redis_client = Redis.from_url(REDIS_URL, encoding = "utf-8")
+    zip_savedir = '_data/tmp'
+
+    logger = get_logging_logger('数据集标注', os.path.join('./logs','inference_dataset.txt'))
+
+    # 调用模型推理
+    try:
+        # predict_class, likelihood = inference_sample(model_path, sample_path, classes)
+        zip_file = inference_dataset(model_path, target_path, classes, os.path.join(DATASET_BASE_PATH, zip_savedir))
+        # 编码推理结果
+        res_message = {
+            'zip_path': os.path.join(zip_savedir, zip_file),
+            'state': "SUCCESS",
+        }
+        # 使用pickel 会导致 读取错误 UnicodeDecodeError: 'utf-8' codec can't decode byte 0x80 in position 0: invalid start byte
+        res_message = json.dumps(res_message)
+        
+        # write result to redis using check_id as key
+        
+        redis_client.set('inferencedataset:{}'.format(check_id),
+                        res_message, ex = 100)
+
+        print("Response to check id: {}".format(check_id))
+    
+    except Exception as e:
+        # 记录日志：
+        etype, value, tb = sys.exc_info()
+
+        for line in TracebackException(
+            type(value), value, tb).format(chain=True):
+            logger.error(value)
+        
+        # 发送错误消息
+        res_message = {
+            'state': "ERROR",
+        }
+        res_message = json.dumps(res_message)
+        
+        # write result to redis using check_id as key
+        
+        redis_client.set('inferencedataset:{}'.format(check_id),
+                        res_message,  ex = 100)
+        print("Send Error to check id: {}".format(check_id))

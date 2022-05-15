@@ -136,3 +136,29 @@ async def get_ready_model_selections(task_id:int, username: str, db: Session):
     selections = crud.get_ready_model_records_by_taskId(task_id, db)
 
     return [dto.ModelSelection.from_orm(selection) for selection in selections]
+
+async def start_inference_dataset(model_id: int, dataset_id: int, pika_publisher: PikaPublisher, db: Session):
+    db_target = crud.get_target_dataset_record_by_id(db = db, recordId = dataset_id)
+    
+
+    db_model = crud.get_active_model_record_by_id(model_id, db)
+    if db_model is None:
+        raise HTTPException(status_code=400, detail="Data not found")
+    if db_model.state != 1:
+        raise HTTPException(status_code=400, detail="Model not ready")
+    db_source = crud.get_source_dataset_record_by_id(db, db_model.source_id)
+    source_dto = dto.SourceDatasetRecordDto.from_orm(db_source)
+    
+    uuid_id = utils.generateUUID()
+
+    mq_message = {
+        'target_path': db_target.file_path,
+        'classes': source_dto.labels,
+        'model_path': db_model.file_path,
+        'model_id': model_id,
+        'check_id': uuid_id,
+    }
+
+    pika_publisher.send_dataset_label(mq_message)
+    
+    return uuid_id

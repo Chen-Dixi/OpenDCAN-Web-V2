@@ -63,10 +63,25 @@
         
       </el-card>
     </el-tab-pane>
-    <el-tab-pane label="数据集" name="second">
+    <el-tab-pane label="数据集" name="second" v-loading="dataset_loading">
       <div>
         标注数据集
       </div>
+      <el-card class="bg-gray-light" shadow="never">
+        <el-select v-model="inference_dataset_id" class="m-2" placeholder="选择数据集">
+          <el-option
+            v-for="dataset in inference_dataset_selections"
+            :key="dataset.id"
+            :label="dataset.title"
+            :value="dataset.id"
+          />
+        </el-select>
+        <el-row class="row-bg" justify="center" :gutter="20">
+          <el-col :span="3">
+            <el-button @click="submitDatasetInference" round>导出标签</el-button>
+          </el-col>
+        </el-row>
+      </el-card>
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -89,23 +104,29 @@ export default {
   },
   setup(){
     const model_id = ref()
+    const inference_dataset_id = ref()
     return {
-      model_id
+      model_id,
+      inference_dataset_id,
     }
   },
   data() {
     return {
       model_selections: [],
+      inference_dataset_selections:[],
       activeTab: 'first',
       imageUrl: '',
       predict: '',
       unknown_likelihood: '',
       sample_check_id: '',
+      dataset_check_id: '',
       uploadActionUrl: globalConfig.backend_service_url + '/task/play/inference/sample',
       uploadData: {},
       uploadHeader: {Authorization: 'Bearer '+cookies.get('access_token'),},
       sample_loading: false,
+      dataset_loading: false,
       sample_check_timer: null,
+      dataset_check_timer: null,
     }
   },
   methods:{
@@ -115,7 +136,11 @@ export default {
         this.model_selections = res.data.selections
       });
     },
-
+    getInferenceSelection(){
+      requests.GetTargetSelection({}, this).then(res => {
+        this.inference_dataset_selections = res.data.selections
+      })
+    },
     beforeImageUpload(rawFile: UploadRawFile){
       if (rawFile.type !== 'image/jpeg' && rawFile.type !== 'image/png') {
         ElMessage.error('Picture must be JPG or PNG format!')
@@ -202,12 +227,60 @@ export default {
     },
     end_timer(){
       clearInterval(this.sample_check_timer);
+      clearInterval(this.dataset_check_timer);
       this.sample_check_timer = null // 这里最好清除一下，回归默认值
+      this.dataset_check_timer = null
+    },
+
+    submitDatasetInference(){
+      if (this.inference_dataset_id == null || this.model_id == null) {
+        ElMessage.error('请选择用于推理的模型 和 需要导出标注的数据集!')
+        return
+      }
+
+
+      let data = {task_id: this.task_prop.id, model_id: this.model_id, dataset_id: this.inference_dataset_id}
+
+      requests.SubmitDatasetInference(data, this).then(res => {
+        this.dataset_check_id = res.data.check_id
+        this.dataset_loading = true;
+        // 循环check
+        this.dataset_check_timer = setInterval(() => {
+          requests.CheckDatasetInferenceResult(this.dataset_check_id, this).then(res => {
+            
+            if (res.data.state == 'SUCCESS'){
+              this.dataset_loading = false;  
+              this.end_timer()
+              // 下载文件请求
+              // requests.DownloadZip({file_path: res.data.zip_path}).then(res => {
+              //   // const blob = new Blob([res.data], { type: 'application/zip' })
+              //   // const link = document.createElement('a')
+              //   // link.href = URL.createObjectURL(blob)
+              //   // link.download = label
+              //   // link.click()
+              //   // URL.revokeObjectURL(link.href)
+              // });
+              const link = document.createElement('a')
+              link.href = globalConfig.backend_service_url + "/task/play/inference/download?file_path="+res.data.zip_path
+              link.download = '数据集标签'
+              link.click()
+            } else if (res.data.state == 'ERROR'){
+              this.dataset_loading = false;  
+              this.end_timer()
+              this.$notify.error({
+                title: '错误',
+                message: '数据集标注失败',
+              })
+            }
+          });
+        }, 1000);
+      });
     },
   },
 
   created(){
     this.getModelSelection()
+    this.getInferenceSelection()
   },
   beforeDestroy() {
     // js提供的clearInterval方法用来清除定时器

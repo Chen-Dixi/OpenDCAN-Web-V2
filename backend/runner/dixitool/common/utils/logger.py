@@ -3,6 +3,11 @@ import sys
 import time
 import logging
 
+__all__ = [
+    'get_logging_logger',
+    'CompleteLogger',
+]
+
 class TextLogger(object):
     """Writes stream output to external text file.
     Args:

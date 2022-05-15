@@ -288,3 +288,23 @@ class ResNetInferenceModel(object):
             pred_label = pred_labels[0].item()
 
         return pred_label, likelihood
+    
+    def predict2(self, input_tensor):
+        """The batch size of input_tensor is 1
+        Args:
+            input_tensor: the model will handle the device for it
+        """
+        input_tensor = input_tensor.to(self.device)
+
+        feat = self.encoder(input_tensor)
+        pred = self.classifier(feat)
+
+        likelihoods = eval_likelihood(pred)# (batch,) 1维向量
+        pred_labels = torch.argmax(pred,dim=1) #(batch, )
+
+        likelihood = likelihoods[0].item()
+        pred_label = pred_labels[0].item()
+
+        return pred_label, likelihood
+    # 标注数据集
+    

@@ -1,5 +1,7 @@
+import os
 import json
 from fastapi import APIRouter, Depends, Request, UploadFile, Form
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from dependencies import get_current_active_user, get_db, get_rabbitmq_blockingconnection
@@ -76,12 +78,12 @@ async def get_model_selection_for_play(task_id: int, user: entity.User = Depends
     return {"selections": selections}
     
 @router.post("/play/inference/sample", response_model=dto.StartInferenceSampleResponse)
-async def inference_sample(file: UploadFile, request: Request,
+async def inference_sample(file: UploadFile,
                            task_id: int = Form(...), model_id: int = Form(...),
                            pika_publisher = Depends(get_rabbitmq_blockingconnection),
                            user: entity.User = Depends(get_current_active_user),
                            db: Session = Depends(get_db)):
-    print("task id: {}\n model_id: {}".format(task_id, model_id))
+    
     # check if task belongs to current user.
     _ = await task_service.get_task_detail(task_id, user.username, db)
 
@@ -102,3 +104,44 @@ async def inference_sample_check(check_id: str, request: Request):
     
     body = json.loads(value)
     return body
+
+"""给整个数据集打好标签
+"""
+@router.post("/play/inference/dataset")
+async def inference_dataset(inferenceDto: dto.CreateDatasetInferenceTaskDto,
+                            pika_publisher = Depends(get_rabbitmq_blockingconnection),
+                            user: entity.User = Depends(get_current_active_user),
+                            db: Session = Depends(get_db)):
+    # check if task belongs to current user.
+    _ = await task_service.get_task_detail(inferenceDto.task_id, user.username, db)
+    
+    # 发送任务消息
+    check_id = await task_service.start_inference_dataset(inferenceDto.model_id, inferenceDto.dataset_id, pika_publisher, db)
+    return {"check_id": check_id}
+
+@router.get("/play/dataset/{check_id}/check")
+async def inference_dataset_check(check_id: str, request: Request):
+    """异步接口，提交一个样本进行预测后，通过此接口查询模型推理结果
+    """
+    cache_key = "inferencedataset:{}".format(check_id)
+    redis = request.app.state.redis#
+    value = await redis.get(cache_key)
+
+    if value is None:
+        return {"state":"PENDING"}
+    
+    body_dict = json.loads(value)
+    
+    if "state" in body_dict and body_dict["state"] == "SUCCESS":
+        zip_path = body_dict["zip_path"]
+        #
+
+    return body_dict
+
+@router.get("/play/inference/download", response_class=FileResponse)
+async def get_zip(file_path:str):
+    
+    if os.path.exists(file_path) and os.path.isfile(file_path):
+        return FileResponse(file_path, media_type='application/zip')
+
+    return FileResponse()
