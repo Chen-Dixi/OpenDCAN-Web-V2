@@ -78,7 +78,7 @@
         </el-select>
         <el-row class="row-bg" justify="center" :gutter="20">
           <el-col :span="3">
-            <el-button @click="submitDatasetInference" round>导出标签</el-button>
+            <el-button @click="submitDatasetInference" round>导出标注</el-button>
           </el-col>
         </el-row>
       </el-card>

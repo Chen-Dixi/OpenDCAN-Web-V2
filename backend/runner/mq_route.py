@@ -105,6 +105,9 @@ def inference_sample_consumer(ch, method, properties, body):
     model_path = os.path.join(MODEL_BASE_PATH, model_path)
     
     redis_client = Redis.from_url(REDIS_URL, encoding = "utf-8")
+
+    logger = get_logging_logger('数据集标注', os.path.join('./logs','inference_sample.txt'))
+    logger.info(classes)
     # 调用模型推理
     try:
         predict_class, likelihood = inference_sample(model_path, sample_path, classes)
@@ -124,6 +127,13 @@ def inference_sample_consumer(ch, method, properties, body):
         print("Response to check id: {}".format(check_id))
     
     except Exception as e:
+        # 记录日志：
+        etype, value, tb = sys.exc_info()
+
+        for line in TracebackException(
+            type(value), value, tb).format(chain=True):
+            logger.error(value)
+
         res_message = {
             'state': "ERROR",
         }
@@ -134,7 +144,7 @@ def inference_sample_consumer(ch, method, properties, body):
         redis_client.set('inferencesample:{}'.format(check_id),
                         res_message,  ex = 100)
         print("Send Error to check id: {}".format(check_id))
-    
+        
     # 删除文件
     try:
         os.remove(path = sample_path)

@@ -56,6 +56,26 @@ services:
               device_ids: ['0']
               capabilities: [gpu]
 
+  runner-inference-dataset:
+    image: chendixi/torch190_zsh:latest
+    container_name: opendcan-runner-inference
+    volumes:
+      - "/home/dixi/Research/project/OpenDCAN-Web-V2/backend:/backend"
+    working_dir: /backend/runner
+    command: python inference_dataset_main.py
+    environment:
+    - RABBITMQ_URI=rabbitmq
+    - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - rabbitmq
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu]
+
   opendcan-vue:
     image: chendixi/dcan-vue:latest
     container_name: opendcan-frontend

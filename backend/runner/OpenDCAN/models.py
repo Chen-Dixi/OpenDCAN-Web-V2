@@ -197,10 +197,10 @@ class ResBase(nn.Module):
         self.bn1 = nn.BatchNorm1d(unit_size, affine=True)
         self.linear2 = nn.Linear(unit_size, unit_size)
         self.bn2 = nn.BatchNorm1d(unit_size, affine=True)
-        # self.linear3 = nn.Linear(unit_size, unit_size)
-        # self.bn3 = nn.BatchNorm1d(unit_size, affine=True)
-        # self.linear4 = nn.Linear(unit_size, unit_size)
-        # self.bn4 = nn.BatchNorm1d(unit_size, affine=True)
+        self.linear3 = nn.Linear(unit_size, unit_size)
+        self.bn3 = nn.BatchNorm1d(unit_size, affine=True)
+        self.linear4 = nn.Linear(unit_size, unit_size)
+        self.bn4 = nn.BatchNorm1d(unit_size, affine=True)
         if print_structure:
             print(self)
 
@@ -287,6 +287,9 @@ class ResNetInferenceModel(object):
             likelihood = likelihoods[0].item()
             pred_label = pred_labels[0].item()
 
+        if likelihood < 0.5:
+            pred_label = pred.size(1) - 1
+            
         return pred_label, likelihood
     
     def predict2(self, input_tensor):
@@ -305,6 +308,8 @@ class ResNetInferenceModel(object):
         likelihood = likelihoods[0].item()
         pred_label = pred_labels[0].item()
 
+        if likelihood < 0.5:
+            pred_label = pred.size(1) - 1
         return pred_label, likelihood
     # 标注数据集
     

@@ -33,9 +33,9 @@
                     <img src="/src/assets/upload-dataset.png" height="100%">
                 </div>
                 <div class="col-sm-10">
-                    <a class="cell-title">Dataset</a>
+                    <a class="cell-title">数据集</a>
                     <div>
-                        <a class="cell-description">Import a structured folder of images. File must ends with one of [.zip .tar.gz, .tar]</a>
+                        <a class="cell-description">导入结构化标签目录中的图像. 数据集文件扩展名必须是[.zip .tar.gz, .tar]</a>
                     </div>
                 </div>
             </div>
